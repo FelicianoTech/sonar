@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"bytes"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -50,6 +51,12 @@ var setDescriptionCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 		defer resp.Body.Close()
+
+		if code, _ := strconv.Atoi(resp.Status); code >= 300 {
+			log.Fatal("There was an error updating the description. Code " + resp.Status)
+		} else {
+			fmt.Println("Successfully updated.")
+		}
 	},
 }
 
