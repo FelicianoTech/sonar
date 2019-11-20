@@ -4,9 +4,8 @@ import (
 	"bytes"
 	"io/ioutil"
 	"net/http"
-	//"net/url"
 	"os"
-	"strings"
+	"strconv"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -29,9 +28,11 @@ var setDescriptionCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		content = append([]byte("{\"full_description\": \""), content[:len(content)-1]...)
+		// Escape file content for use in JSON
+		content = []byte(strconv.Quote(string(content)))
+
+		content = append([]byte("{\"full_description\": "), content[:len(content)-1]...)
 		content = append(content, []byte("\"}")...)
-		content = []byte(strings.ReplaceAll(string(content), "\n", "\\n"))
 
 		req, err := http.NewRequest("PATCH", "https://hub.docker.com/v2/repositories/"+args[0]+"/", bytes.NewBuffer(content))
 		if err != nil {
