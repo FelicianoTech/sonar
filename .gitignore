@@ -1,0 +1,9 @@
+# Binaries
+/src/stubb
+/src/dist/
+
+# Snapcraft
+*.snap
+/parts/
+/prime/
+/stage/

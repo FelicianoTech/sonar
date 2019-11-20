@@ -1,0 +1,131 @@
+version: 2.1
+
+executors:
+  goreleaser:
+    docker:
+      - image: cibuilds/goreleaser:0.122
+
+workflows:
+  main:
+    jobs:
+      - test
+      - build-binaries
+      - build-snap:
+          name: "Build Snap"
+          requires:
+            - build-binaries
+          filters:
+            branches:
+              ignore: /^master$/
+      - build-snap:
+          name: "Build 'edge' Snap"
+          requires:
+            - build-binaries
+          filters:
+            branches:
+              only: /^master$/
+          publish-edge: true
+  release:
+    jobs:
+      - test:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              # Simplified SemVer regex
+              only: /^v\d+\.\d+\.\d+$/
+      - build-binaries:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              # Simplified SemVer regex
+              only: /^v\d+\.\d+\.\d+$/
+          publish: true
+      - build-snap:
+          name: "Build 'stable' Snap"
+          requires:
+            - build-binaries
+          publish-stable: true
+
+jobs:
+  test:
+    docker:
+      - image: cimg/go:1.13
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - go-mod-v1
+      - run:
+          name: "Download Dependancies"
+          command: cd src && go mod download
+      - run:
+          name: "Run Tests"
+          command: cd src && go test
+      - save_cache:
+          key: go-mod-v1
+          paths:
+            - "/go/pkg/mod"
+  build-binaries:
+    parameters:
+      publish:
+        type: boolean
+        default: false
+    executor: goreleaser
+    steps:
+      - checkout
+      - unless:
+          condition: << parameters.publish >>
+          steps:
+            - run:
+                name: "Build Binaries with GoReleaser"
+                command: cd src && goreleaser --snapshot --skip-publish --rm-dist
+      - when:
+          condition: << parameters.publish >>
+          steps:
+            - run:
+                name: "Build Binaries & Publish with GoReleaser"
+                command: cd src && goreleaser
+      - persist_to_workspace:
+          root: "src"
+          paths:
+            - "dist"
+  build-snap:
+    parameters:
+      publish-edge:
+        type: boolean
+        default: false
+      publish-stable:
+        type: boolean
+        default: false
+    docker:
+      - image: cibuilds/snapcraft:core18
+    steps:
+      - checkout
+      - attach_workspace:
+          at: src
+      - run:
+          name: "Build Snaps for Each Architecture"
+          command: |
+            # Generate a version file that Snapcraft can use
+            src/dist/stubb_linux_amd64/stubb version --short > VERSION
+            snapcraft
+      - when:
+          condition: << parameters.publish-edge >>
+          steps:
+            - run:
+                name: "Publish to Snap Store in the Edge Channel"
+                command: |
+                  # Snapcraft Tokens are valid for 1 year. This one expires November 19th, 2020
+                  echo $SNAPCRAFT_LOGIN_FILE | base64 --decode --ignore-garbage | snapcraft login --with -
+                  snapcraft push *.snap --release=edge
+      - when:
+          condition: << parameters.publish-stable >>
+          steps:
+            - run:
+                name: "Publish to Snap Store in the Stable Channel"
+                command: |
+                  # Snapcraft Tokens are valid for 1 year. This one expires November 19th, 2020
+                  echo $SNAPCRAFT_LOGIN_FILE | base64 --decode --ignore-garbage | snapcraft login --with -
+                  snapcraft push *.snap --release=stable
