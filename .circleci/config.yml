@@ -46,6 +46,12 @@ workflows:
           name: "Build 'stable' Snap"
           requires:
             - build-binaries
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              # Simplified SemVer regex
+              only: /^v\d+\.\d+\.\d+$/
           publish-stable: true
 
 jobs:
