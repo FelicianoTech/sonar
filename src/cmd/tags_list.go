@@ -21,28 +21,40 @@ var tagsListCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		req, err := http.NewRequest("GET", "https://hub.docker.com/v2/repositories/"+args[0]+"/tags/?page_size=100", nil)
-		if err != nil {
-			log.Fatal(err)
-		}
+		reqURL := "https://hub.docker.com/v2/repositories/" + args[0] + "/tags/?page_size=100"
+		var results []string
 
-		resp, err := sendRequest(req, "", "")
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer resp.Body.Close()
+		for {
 
-		var result2 map[string]interface{}
-		json.NewDecoder(resp.Body).Decode(&result2)
+			req, err := http.NewRequest("GET", reqURL, nil)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			resp, err := sendRequest(req, "", "")
+			if err != nil {
+				log.Fatal(err)
+			}
+			defer resp.Body.Close()
+
+			var respPage map[string]interface{}
+			json.NewDecoder(resp.Body).Decode(&respPage)
+
+			for _, v := range respPage["results"].([]interface{}) {
+				results = append(results, v.(map[string]interface{})["name"].(string))
+			}
+
+			if respPage["next"] == nil {
+				break
+			} else {
+				reqURL = respPage["next"].(string)
+			}
+		}
 
 		fmt.Println("The tags are: ")
 
-		for _, v := range result2["results"].([]interface{}) {
-			//log.Println(v)
-			//var images []interface{}
-			//images = v.(map[string]interface{})["images"].([]interface{})
-			fmt.Println(v.(map[string]interface{})["name"])
-			//log.Println("digest: ", images[0].(map[string]interface{})["digest"])
+		for _, tag := range results {
+			fmt.Println(tag)
 		}
 	},
 }
