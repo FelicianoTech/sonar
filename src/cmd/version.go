@@ -27,7 +27,7 @@ var versionShort = false
 // versionCmd represents the version command
 var versionCmd = &cobra.Command{
 	Use:   "version",
-	Short: "Print version information for Stubb",
+	Short: "Print version information for Sonar",
 	Run: func(cmd *cobra.Command, args []string) {
 
 		if strings.HasPrefix(version, "dev") || strings.HasPrefix(version, "SNAPSHOT") {
@@ -42,7 +42,7 @@ var versionCmd = &cobra.Command{
 			return
 		}
 
-		fmt.Println("Stubb")
+		fmt.Println("Sonar")
 		fmt.Println("Version: " + version)
 		fmt.Println("Date: " + buildDate)
 		fmt.Println("Platform: " + kernel + "/" + arch)

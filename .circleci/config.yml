@@ -115,7 +115,7 @@ jobs:
           name: "Build Snaps for Each Architecture"
           command: |
             # Generate a version file that Snapcraft can use
-            src/dist/stubb_linux_amd64/stubb version --short > VERSION
+            src/dist/sonar_linux_amd64/sonar version --short > VERSION
             snapcraft
       - when:
           condition: << parameters.publish-edge >>
@@ -123,7 +123,7 @@ jobs:
             - run:
                 name: "Publish to Snap Store in the Edge Channel"
                 command: |
-                  # Snapcraft Tokens are valid for 1 year. This one expires November 19th, 2020
+                  # Snapcraft Tokens are valid for 1 year. This one expires August 1st, 2021
                   echo $SNAPCRAFT_LOGIN_FILE | base64 --decode --ignore-garbage | snapcraft login --with -
                   snapcraft push *.snap --release=edge
       - when:
@@ -132,6 +132,6 @@ jobs:
             - run:
                 name: "Publish to Snap Store in the Stable Channel"
                 command: |
-                  # Snapcraft Tokens are valid for 1 year. This one expires November 19th, 2020
+                  # Snapcraft Tokens are valid for 1 year. This one expires August 1st, 2021
                   echo $SNAPCRAFT_LOGIN_FILE | base64 --decode --ignore-garbage | snapcraft login --with -
                   snapcraft push *.snap --release=stable

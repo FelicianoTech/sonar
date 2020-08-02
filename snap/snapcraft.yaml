@@ -1,31 +1,30 @@
-name: stubb
-title: "Stubb"
-summary: "A Docker utility by CircleCI."
+name: sonar
+title: "Sonar"
+summary: "A Docker utility."
 description: |
-  Stubb is a Docker utility that allows you to display information on Docker images, tags, and layers as well as Docker Hub metrics.
+  Sonar is a Docker utility that allows you to display information on Docker images, tags, and layers as well as Docker Hub metrics.
 license: MIT
 base: core18
 grade: stable
 confinement: strict
-adopt-info: stubb
-icon: "img/circleci-logo.svg"
+adopt-info: sonar
 
 parts:
-  stubb:
+  sonar:
     plugin: dump
     source: .
     override-build: |
       snapcraftctl build
 
-      cp src/dist/stubb_linux_amd64/stubb $SNAPCRAFT_PART_INSTALL
+      cp src/dist/sonar_linux_amd64/sonar $SNAPCRAFT_PART_INSTALL
 
-      chmod +x $SNAPCRAFT_PART_INSTALL/stubb
+      chmod +x $SNAPCRAFT_PART_INSTALL/sonar
 
       snapcraftctl set-version $(cat VERSION)
 
 apps:
-  stubb:
-    command: stubb
+  sonar:
+    command: sonar
     plugs:
       - home
       - network

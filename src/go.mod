@@ -1,4 +1,4 @@
-module github.com/CircleCI-Public/stubb
+module github.com/felicianotech/sonar
 
 go 1.14
 

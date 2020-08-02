@@ -1,6 +1,6 @@
 package main
 
-import "github.com/CircleCI-Public/stubb/cmd"
+import "github.com/felicianotech/sonar/cmd"
 
 func main() {
 	cmd.Execute()
