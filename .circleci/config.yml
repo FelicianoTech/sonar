@@ -25,6 +25,7 @@ workflows:
             branches:
               only: /^master$/
           publish-edge: true
+          context: main
   release:
     jobs:
       - test:
@@ -42,6 +43,7 @@ workflows:
               # Simplified SemVer regex
               only: /^v\d+\.\d+\.\d+$/
           publish: true
+          context: main
       - build-snap:
           name: "Build 'stable' Snap"
           requires:
@@ -53,6 +55,7 @@ workflows:
               # Simplified SemVer regex
               only: /^v\d+\.\d+\.\d+$/
           publish-stable: true
+          context: main
 
 jobs:
   test:
