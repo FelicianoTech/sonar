@@ -5,6 +5,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var cfgFile string
@@ -25,5 +26,33 @@ func Execute() {
 
 func init() {
 
-	cobra.OnInitialize()
+	cobra.OnInitialize(initConfig)
+
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.config/sonar.yml)")
+}
+
+// initConfig reads in config file and ENV variables if set.
+func initConfig() {
+
+	if cfgFile != "" {
+		viper.SetConfigFile(cfgFile)
+	} else {
+
+		cfgDir, err := os.UserConfigDir()
+		if err != nil {
+			cfgDir = "~/.config"
+		}
+
+		viper.AddConfigPath(cfgDir)
+		viper.SetConfigName("sonar")
+	}
+
+	viper.SetEnvPrefix("DOCKER")
+	viper.AutomaticEnv() // read in envars that match
+
+	// set config defaults
+	viper.SetDefault("version", "0.1") // the version of the config file
+	viper.SetDefault("defaultRepository", "hub")
+
+	viper.ReadInConfig()
 }
