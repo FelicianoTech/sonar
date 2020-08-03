@@ -41,7 +41,8 @@ var tagsListCmd = &cobra.Command{
 			json.NewDecoder(resp.Body).Decode(&respPage)
 
 			for _, v := range respPage["results"].([]interface{}) {
-				results = append(results, v.(map[string]interface{})["name"].(string))
+				size := fmt.Sprintf("%fMB", v.(map[string]interface{})["full_size"].(float64)/1024/1024)
+				results = append(results, v.(map[string]interface{})["name"].(string)+","+v.(map[string]interface{})["last_updated"].(string)+","+size)
 			}
 
 			if respPage["next"] == nil {
