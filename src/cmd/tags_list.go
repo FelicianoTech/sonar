@@ -21,6 +21,7 @@ var tagsListCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
+		// The loop logic should use the new function "getAllTags" in the future
 		reqURL := "https://hub.docker.com/v2/repositories/" + args[0] + "/tags/?page_size=100"
 		var results []string
 
