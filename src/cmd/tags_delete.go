@@ -16,9 +16,6 @@ import (
 
 var (
 	dryRunFl bool
-	fieldFl  string
-	gtFl     string
-	ltFl     string
 	yesFl    bool
 
 	tagsDeleteCmd = &cobra.Command{
@@ -117,9 +114,6 @@ var (
 func init() {
 
 	tagsDeleteCmd.Flags().BoolVar(&dryRunFl, "dry-run", false, "show what would be deleted without actually deleting any tags")
-	tagsDeleteCmd.Flags().StringVar(&fieldFl, "field", "name", "the field to filter what will be deleted. Only 'date' is supported right now.")
-	tagsDeleteCmd.Flags().StringVar(&gtFl, "gt", "", "delete tags 'greater than' this value - allowed values is based on the 'field' choosen. A relative time in seconds, minutes, or hours is supported.")
-	tagsDeleteCmd.Flags().StringVar(&ltFl, "lt", "", "delete tags 'less than' this value - allowed values is based on the 'field' choosen. A relative time in seconds, minutes, or hours is supported.")
 	tagsDeleteCmd.Flags().BoolVarP(&yesFl, "yes", "y", false, "automatic yes to deletion prompt, useful for scripting")
 
 	tagsCmd.AddCommand(tagsDeleteCmd)

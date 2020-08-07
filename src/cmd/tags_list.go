@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/spf13/cobra"
 
@@ -22,19 +23,62 @@ var (
 				os.Exit(1)
 			}
 
+			if fieldFl != "date" && fieldFl != "" {
+				log.Fatal("if 'field' is set it must be 'date'.")
+				os.Exit(1)
+			}
+
+			gDuration, err := time.ParseDuration(gtFl)
+			if err != nil {
+				fmt.Errorf("Cannot parse duration from 'gt'", err)
+			}
+			gCutDate := time.Now().Add(-gDuration)
+
+			lDuration, err := time.ParseDuration(ltFl)
+			if err != nil {
+				fmt.Errorf("Cannot parse duration from 'lt'", err)
+			}
+			lCutDate := time.Now().Add(-lDuration)
+
 			dockerTags := getAllTags(args[0])
+			var filteredTags []dockerTag
+
+			for _, tag := range dockerTags {
+
+				if fieldFl != "" {
+					if gtFl != "" && fieldFl == "date" {
+						if gCutDate.After(tag.date) {
+							filteredTags = append(filteredTags, tag)
+						}
+					}
+
+					if ltFl != "" && fieldFl == "date" {
+						if lCutDate.Before(tag.date) {
+							filteredTags = append(filteredTags, tag)
+						}
+					}
+				} else {
+					filteredTags = append(filteredTags, tag)
+				}
+			}
+
+			if len(filteredTags) == 0 {
+
+				fmt.Println("There were no tags to list.")
+				return
+			}
 
 			fmt.Println("The tags are: ")
 			var totalSize uint64
 
-			for _, tag := range dockerTags {
+			for _, tag := range filteredTags {
 				fmt.Println(tag.name)
 				if sumSizeFl {
 					totalSize += uint64(tag.size)
 				}
 			}
 
-			fmt.Printf("Total tags: %d\n", len(dockerTags))
+			fmt.Printf("Total tags: %d\n", len(filteredTags))
 			if sumSizeFl {
 				fmt.Printf("Total size: %s\n", ByteCountBinary(totalSize))
 			}
