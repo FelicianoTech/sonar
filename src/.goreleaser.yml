@@ -22,7 +22,7 @@ archives:
       - ../README.md
 nfpms:
   -
-    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
+    file_name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
     homepage: "https://www.Feliciano.Tech"
     maintainer: "Ricardo N Feliciano <Ricardo@Feliciano.Tech>"
     description: "A Docker utility."
