@@ -1,10 +1,5 @@
 version: 2.1
 
-executors:
-  goreleaser:
-    docker:
-      - image: cibuilds/goreleaser:0.141
-
 workflows:
   main:
     jobs:
@@ -81,9 +76,15 @@ jobs:
       publish:
         type: boolean
         default: false
-    executor: goreleaser
+    docker:
+      - image: cimg/go:1.14
     steps:
       - checkout
+      - run:
+          name: "Install GoReleaser"
+          command: |
+            curl -sSL "https://github.com/goreleaser/goreleaser/releases/download/v0.141.0/goreleaser_Linux_x86_64.tar.gz" | sudo tar -xz -C /usr/local/bin goreleaser
+            goreleaser --version
       - unless:
           condition: << parameters.publish >>
           steps:
