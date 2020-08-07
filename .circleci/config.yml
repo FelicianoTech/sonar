@@ -90,15 +90,15 @@ jobs:
           steps:
             - run:
                 name: "Build Binaries with GoReleaser"
-                command: cd src && goreleaser --snapshot --skip-publish --rm-dist
+                command: goreleaser --snapshot --skip-publish --rm-dist
       - when:
           condition: << parameters.publish >>
           steps:
             - run:
                 name: "Build Binaries & Publish with GoReleaser"
-                command: cd src && goreleaser
+                command: goreleaser
       - persist_to_workspace:
-          root: "src"
+          root: "."
           paths:
             - "dist"
   build-snap:
@@ -114,12 +114,12 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: src
+          at: .
       - run:
           name: "Build Snaps for Each Architecture"
           command: |
             # Generate a version file that Snapcraft can use
-            src/dist/sonar_linux_amd64/sonar version --short > VERSION
+            dist/sonar_linux_amd64/sonar version --short > VERSION
             snapcraft
       - when:
           condition: << parameters.publish-edge >>
