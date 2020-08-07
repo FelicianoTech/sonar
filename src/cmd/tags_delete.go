@@ -19,6 +19,7 @@ var (
 	fieldFl  string
 	gtFl     string
 	ltFl     string
+	yesFl    bool
 
 	tagsDeleteCmd = &cobra.Command{
 		Use:   "delete <image-name>",
@@ -86,17 +87,21 @@ var (
 				return
 			}
 
-			fmt.Printf("You are about to permanently delete %d tags. Continue? [y/yes/n/no] ", len(tagsToDelete))
-			scanner := bufio.NewScanner(os.Stdin)
-			for scanner.Scan() {
-				if scanner.Text() == "n" || scanner.Text() == "no" {
-					fmt.Println("Cancelling.")
-					return
-				} else if scanner.Text() == "y" || scanner.Text() == "yes" {
-					break
-				} else {
-					fmt.Println("Invalid input. Try again.")
+			if !yesFl {
+				fmt.Printf("You are about to permanently delete %d tags. Continue? [y/yes/n/no] ", len(tagsToDelete))
+				scanner := bufio.NewScanner(os.Stdin)
+				for scanner.Scan() {
+					if scanner.Text() == "n" || scanner.Text() == "no" {
+						fmt.Println("Cancelling.")
+						return
+					} else if scanner.Text() == "y" || scanner.Text() == "yes" {
+						break
+					} else {
+						fmt.Println("Invalid input. Try again.")
+					}
 				}
+			} else {
+				fmt.Printf("Permanently deleting %d tags.", len(tagsToDelete))
 			}
 
 			for _, tag := range tagsToDelete {
@@ -115,6 +120,7 @@ func init() {
 	tagsDeleteCmd.Flags().StringVar(&fieldFl, "field", "name", "the field to filter what will be deleted. Only 'date' is supported right now.")
 	tagsDeleteCmd.Flags().StringVar(&gtFl, "gt", "", "delete tags 'greater than' this value - allowed values is based on the 'field' choosen. A relative time in seconds, minutes, or hours is supported.")
 	tagsDeleteCmd.Flags().StringVar(&ltFl, "lt", "", "delete tags 'less than' this value - allowed values is based on the 'field' choosen. A relative time in seconds, minutes, or hours is supported.")
+	tagsDeleteCmd.Flags().BoolVarP(&yesFl, "yes", "y", false, "automatic yes to deletion prompt, useful for scripting")
 
 	tagsCmd.AddCommand(tagsDeleteCmd)
 }
