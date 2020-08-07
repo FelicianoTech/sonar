@@ -1,9 +1,9 @@
 project_name: sonar
-env:
-  - CGO_ENABLED=0
+
 before:
   hooks:
     - go mod download
+
 builds:
   -
     goos:
@@ -13,22 +13,38 @@ builds:
       - amd64
 
     ldflags:
-      - -s -w -X github.com/felicianotech/sonar/cmd.version={{ .Version }}
+      - -s -w -X github.com/felicianotech/sonar/cmd.version={{ .Version }} -extldflags "-static"
+
 archives:
   -
-    name_template: "{{ .ProjectName }}_{{ .Version }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
+    format: tar.gz
+    name_template: "{{ .ProjectName }}-v{{ .Version }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
     files:
       - ../LICENSE
       - ../README.md
+    replacements:
+      darwin: macos
+
 nfpms:
   -
-    file_name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
+    file_name_template: "{{ .ProjectName }}-v{{ .Version }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
     homepage: "https://www.Feliciano.Tech"
     maintainer: "Ricardo N Feliciano <Ricardo@Feliciano.Tech>"
     description: "A Docker utility."
     license: MIT
     formats:
       - deb
-    recommends:
-      - systemd
     bindir: /usr/bin
+
+brews:
+  - tap:
+      owner: felicianotech
+      name: homebrew-tap
+    commit_author:
+      name: "Ricardo N Feliciano (FelicianoTech)"
+      email: "Ricardo@Feliciano.Tech"
+    folder: Formula
+    homepage: "https://github.com/felicianotech/sonar"
+    description: "A Docker utility."
+    test: |
+      system "#{bin}/sonar", "help"
