@@ -3,7 +3,7 @@ version: 2.1
 executors:
   goreleaser:
     docker:
-      - image: cibuilds/goreleaser:0.122
+      - image: cibuilds/goreleaser:0.141
 
 workflows:
   main:
