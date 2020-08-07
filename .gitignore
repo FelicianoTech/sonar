@@ -1,6 +1,6 @@
 # Binaries
 /src/sonar
-/src/dist/
+/dist/
 
 # Snapcraft
 *.snap

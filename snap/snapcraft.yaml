@@ -16,7 +16,7 @@ parts:
     override-build: |
       snapcraftctl build
 
-      cp src/dist/sonar_linux_amd64/sonar $SNAPCRAFT_PART_INSTALL
+      cp dist/sonar_linux_amd64/sonar $SNAPCRAFT_PART_INSTALL
 
       chmod +x $SNAPCRAFT_PART_INSTALL/sonar
 

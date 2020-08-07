@@ -1,17 +1,13 @@
 project_name: sonar
 
-before:
-  hooks:
-    - go mod download
-
 builds:
   -
+    dir: src
     goos:
       - linux
       - darwin
     goarch:
       - amd64
-
     ldflags:
       - -s -w -X github.com/felicianotech/sonar/cmd.version={{ .Version }} -extldflags "-static"
 
@@ -20,8 +16,8 @@ archives:
     format: tar.gz
     name_template: "{{ .ProjectName }}-v{{ .Version }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
     files:
-      - ../LICENSE
-      - ../README.md
+      - LICENSE
+      - README.md
     replacements:
       darwin: macos
 
