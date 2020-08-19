@@ -38,13 +38,13 @@ var (
 				os.Exit(1)
 			}
 
-			gDuration, err := time.ParseDuration(gtFl)
+			gDuration, err := parseDuration(gtFl)
 			if err != nil {
 				fmt.Errorf("Cannot parse duration from 'gt'", err)
 			}
 			gCutDate := time.Now().Add(-gDuration)
 
-			lDuration, err := time.ParseDuration(ltFl)
+			lDuration, err := parseDuration(ltFl)
 			if err != nil {
 				fmt.Errorf("Cannot parse duration from 'lt'", err)
 			}
