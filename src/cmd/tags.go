@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"strconv"
 	"time"
 
@@ -36,7 +35,6 @@ func parseDuration(duration string) (time.Duration, error) {
 	}
 
 	cutPoint := len(duration) - 1
-	fmt.Printf("cutPoint: %d\n", cutPoint) //DEBUG
 	var multiple int
 
 	if duration[cutPoint:] == "d" {
@@ -51,8 +49,6 @@ func parseDuration(duration string) (time.Duration, error) {
 	}
 
 	if multiple != 0 {
-		fmt.Printf("The number of hours is: %dh\n", integer*multiple) //DEBUG
-		fmt.Printf("The integer is: %d\n", integer)                   //DEBUG
 		return time.ParseDuration(strconv.Itoa(integer*multiple) + "h")
 	}
 
