@@ -8,6 +8,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/schollz/progressbar/v3"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -101,11 +102,14 @@ var (
 				fmt.Printf("Permanently deleting %d tags.", len(tagsToDelete))
 			}
 
+			pb := progressbar.Default(int64(len(tagsToDelete)))
 			for _, tag := range tagsToDelete {
 				err := deleteDockerTag(args[0], tag.name)
 				if err != nil {
 					log.Error(err)
 				}
+
+				pb.Add(1)
 			}
 		},
 	}
