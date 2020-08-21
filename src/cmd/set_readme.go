@@ -14,9 +14,16 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var setDescriptionCmd = &cobra.Command{
-	Use:   "description <image-name> <file>",
-	Short: "Set the description for an image on Docker Hub",
+var setReadmeCmd = &cobra.Command{
+	Use:   "readme <image-name> <file>",
+	Short: "Set the readme for an image on Docker Hub",
+	Long: `This command was previously called 'set description'. Docker Hub now 
+refers to the summary as a description and the old description as a readme.`,
+	// This alias is temporarly. Docker Hub changed how they word things. The
+	// summary is called a description and the readme is called
+	// full_description. Since we previously called readme description, this
+	// alias allows for a smooth transition over to the new names.
+	Aliases: []string{"description"},
 	Run: func(cmd *cobra.Command, args []string) {
 
 		if len(args) < 2 {
@@ -61,5 +68,5 @@ var setDescriptionCmd = &cobra.Command{
 }
 
 func init() {
-	setCmd.AddCommand(setDescriptionCmd)
+	setCmd.AddCommand(setReadmeCmd)
 }
