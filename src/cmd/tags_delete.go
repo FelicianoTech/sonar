@@ -102,7 +102,20 @@ var (
 				fmt.Printf("Permanently deleting %d tags.", len(tagsToDelete))
 			}
 
-			pb := progressbar.Default(int64(len(tagsToDelete)))
+			pb := progressbar.NewOptions(len(tagsToDelete),
+				progressbar.OptionShowIts(),
+				progressbar.OptionSetItsString("tags"),
+				progressbar.OptionThrottle(65*time.Millisecond),
+				progressbar.OptionShowCount(),
+				progressbar.OptionShowIts(),
+				progressbar.OptionOnCompletion(func() {
+					fmt.Fprint(os.Stdout, "\n")
+				}),
+				progressbar.OptionFullWidth(),
+			)
+
+			pb.RenderBlank()
+
 			for _, tag := range tagsToDelete {
 				err := deleteDockerTag(args[0], tag.name)
 				if err != nil {
