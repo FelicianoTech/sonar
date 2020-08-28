@@ -86,7 +86,7 @@ var (
 			}
 
 			if !yesFl {
-				fmt.Printf("You are about to permanently delete %d tags. Continue? [y/yes/n/no] ", len(tagsToDelete))
+				fmt.Printf("You are about to permanently delete %d of %d tags. Continue? [y/yes/n/no] ", len(tagsToDelete), len(dockerTags))
 				scanner := bufio.NewScanner(os.Stdin)
 				for scanner.Scan() {
 					if scanner.Text() == "n" || scanner.Text() == "no" {
@@ -99,7 +99,7 @@ var (
 					}
 				}
 			} else {
-				fmt.Printf("Permanently deleting %d tags.", len(tagsToDelete))
+				fmt.Printf("Permanently deleting %d  of %d tags.", len(tagsToDelete), len(dockerTags))
 			}
 
 			pb := progressbar.NewOptions(len(tagsToDelete),

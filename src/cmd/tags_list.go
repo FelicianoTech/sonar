@@ -68,7 +68,6 @@ var (
 				return
 			}
 
-			fmt.Println("The tags are: ")
 			var totalSize uint64
 
 			for _, tag := range filteredTags {
@@ -78,7 +77,8 @@ var (
 				}
 			}
 
-			fmt.Printf("Total tags: %d\n", len(filteredTags))
+			fmt.Println("====================")
+			fmt.Printf("Tags: showing %d of %d\n", len(filteredTags), len(dockerTags))
 			if sumSizeFl {
 				fmt.Printf("Total size: %s\n", ByteCountBinary(totalSize))
 			}
