@@ -8,10 +8,55 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+type dockerLayer struct {
+	digest      string
+	size        uint64
+	instruction string
+}
+
 type dockerTag struct {
 	name string
 	size uint64
 	date time.Time
+}
+
+func getAllLayers(image, tag string) []dockerLayer {
+
+	var results []dockerLayer
+
+	reqURL := "https://hub.docker.com/v2/repositories/" + image + "/tags/" + tag + "/images"
+
+	req, err := http.NewRequest("GET", reqURL, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	resp, err := sendRequest(req, "", "")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer resp.Body.Close()
+
+	var respPage []map[string]interface{}
+	err = json.NewDecoder(resp.Body).Decode(&respPage)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, v := range respPage[0]["layers"].([]interface{}) {
+
+		var aLayer dockerLayer
+
+		if v.(map[string]interface{})["digest"] != nil {
+			aLayer.digest = v.(map[string]interface{})["digest"].(string)
+		}
+		aLayer.size = uint64(v.(map[string]interface{})["size"].(float64))
+		aLayer.instruction = v.(map[string]interface{})["instruction"].(string)
+
+		results = append(results, aLayer)
+	}
+
+	return results
 }
 
 func getAllTags(image string) []dockerTag {
