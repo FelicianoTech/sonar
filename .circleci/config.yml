@@ -63,10 +63,10 @@ jobs:
             - go-mod-v1
       - run:
           name: "Download Dependancies"
-          command: cd src && go mod download
+          command: cd sonar && go mod download
       - run:
           name: "Run Tests"
-          command: cd src && go test
+          command: cd sonar && go test
       - save_cache:
           key: go-mod-v1
           paths:
@@ -115,6 +115,7 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
+      - run: sudo rm -r sonar
       - run:
           name: "Build Snaps for Each Architecture"
           command: |
