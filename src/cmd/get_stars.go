@@ -28,7 +28,7 @@ var getStarsCmd = &cobra.Command{
 		}
 
 		p := message.NewPrinter(message.MatchLanguage("en"))
-		p.Printf("The number of %v pulls is: %v", args[0], stars)
+		p.Printf("The number of %v stars is: %v", args[0], stars)
 
 	},
 }
