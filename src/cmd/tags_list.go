@@ -5,6 +5,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/felicianotech/sonar/docker"
+
 	"github.com/spf13/cobra"
 
 	log "github.com/sirupsen/logrus"
@@ -40,20 +42,23 @@ var (
 			}
 			lCutDate := time.Now().Add(-lDuration)
 
-			dockerTags := getAllTags(args[0])
-			var filteredTags []dockerTag
+			dockerTags, err := docker.GetAllTags(args[0])
+			if err != nil {
+				fmt.Errorf("Failed retrieving Docker tags", err)
+			}
+			var filteredTags []docker.Tag
 
 			for _, tag := range dockerTags {
 
 				if fieldFl != "" {
 					if gtFl != "" && fieldFl == "date" {
-						if gCutDate.After(tag.date) {
+						if gCutDate.After(tag.Date) {
 							filteredTags = append(filteredTags, tag)
 						}
 					}
 
 					if ltFl != "" && fieldFl == "date" {
-						if lCutDate.Before(tag.date) {
+						if lCutDate.Before(tag.Date) {
 							filteredTags = append(filteredTags, tag)
 						}
 					}
@@ -71,9 +76,9 @@ var (
 			var totalSize uint64
 
 			for _, tag := range filteredTags {
-				fmt.Println(tag.name)
+				fmt.Println(tag.Name)
 				if sumSizeFl {
-					totalSize += uint64(tag.size)
+					totalSize += uint64(tag.Size)
 				}
 			}
 

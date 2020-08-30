@@ -1,17 +1,15 @@
-package cmd
+package docker
 
 import (
 	"bytes"
 	"encoding/json"
 	"net/http"
-
-	log "github.com/sirupsen/logrus"
 )
 
 var numRequests int
 var token string
 
-func sendRequest(request *http.Request, username, password string) (*http.Response, error) {
+func SendRequest(request *http.Request, username, password string) (*http.Response, error) {
 
 	client := &http.Client{}
 
@@ -29,13 +27,13 @@ func sendRequest(request *http.Request, username, password string) (*http.Respon
 			"password": password,
 		})
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 
 		// authenticate
 		resp, err := http.Post("https://hub.docker.com/v2/users/login/", "application/json", bytes.NewBuffer(requestBody))
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 		defer resp.Body.Close()
 

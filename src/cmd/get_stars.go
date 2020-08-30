@@ -1,9 +1,10 @@
 package cmd
 
 import (
-	"encoding/json"
-	"net/http"
+	"fmt"
 	"os"
+
+	"github.com/felicianotech/sonar/docker"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/text/message"
@@ -21,22 +22,13 @@ var getStarsCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		req, err := http.NewRequest("GET", "https://hub.docker.com/v2/repositories/"+args[0]+"/", nil)
+		stars, err := docker.ImageStars(args[0])
 		if err != nil {
-			log.Fatal(err)
+			fmt.Errorf("Error retrieving stars: %s", err)
 		}
-
-		resp, err := sendRequest(req, "", "")
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer resp.Body.Close()
-
-		var result2 map[string]interface{}
-		json.NewDecoder(resp.Body).Decode(&result2)
 
 		p := message.NewPrinter(message.MatchLanguage("en"))
-		p.Printf("The number of %v pulls is: %v", args[0], result2["star_count"])
+		p.Printf("The number of %v pulls is: %v", args[0], stars)
 
 	},
 }
