@@ -7,7 +7,6 @@ import (
 	"github.com/felicianotech/sonar/docker"
 
 	"github.com/spf13/cobra"
-	"golang.org/x/text/message"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -27,8 +26,7 @@ var getStarsCmd = &cobra.Command{
 			fmt.Errorf("Error retrieving stars: %s", err)
 		}
 
-		p := message.NewPrinter(message.MatchLanguage("en"))
-		p.Printf("The number of %v stars is: %v", args[0], stars)
+		fmt.Printf("The number of %v stars is: %v", args[0], stars)
 
 	},
 }
