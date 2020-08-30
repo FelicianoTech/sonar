@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/felicianotech/sonar/docker"
+	"github.com/felicianotech/sonar/sonar/docker"
 
 	"github.com/schollz/progressbar/v3"
 	"github.com/spf13/cobra"

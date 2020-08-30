@@ -1,4 +1,4 @@
-module github.com/felicianotech/sonar
+module github.com/felicianotech/sonar/sonar
 
 go 1.15
 

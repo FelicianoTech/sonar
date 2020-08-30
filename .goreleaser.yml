@@ -1,7 +1,7 @@
 project_name: sonar
 
 builds:
-  - dir: src
+  - dir: sonar
     goos:
       - linux
       - darwin
