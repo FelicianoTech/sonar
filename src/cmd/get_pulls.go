@@ -7,7 +7,6 @@ import (
 	"github.com/felicianotech/sonar/docker"
 
 	"github.com/spf13/cobra"
-	"golang.org/x/text/message"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -27,8 +26,7 @@ var getPullsCmd = &cobra.Command{
 			fmt.Errorf("Error retrieving pulls: %s", err)
 		}
 
-		p := message.NewPrinter(message.MatchLanguage("en"))
-		p.Printf("The number of %v pulls is: %v", args[0], pulls)
+		fmt.Printf("The number of %v pulls is: %v", args[0], pulls)
 	},
 }
 
