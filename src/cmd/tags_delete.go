@@ -8,6 +8,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/felicianotech/sonar/docker"
+
 	"github.com/schollz/progressbar/v3"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -51,19 +53,22 @@ var (
 			}
 			lCutDate := time.Now().Add(-lDuration)
 
-			dockerTags := getAllTags(args[0])
-			var tagsToDelete []dockerTag
+			dockerTags, err := docker.GetAllTags(args[0])
+			if err != nil {
+				fmt.Errorf("Failed retrieving Docker tags", err)
+			}
+			var tagsToDelete []docker.Tag
 
 			for _, tag := range dockerTags {
 
 				if gtFl != "" && fieldFl == "date" {
-					if gCutDate.After(tag.date) {
+					if gCutDate.After(tag.Date) {
 						tagsToDelete = append(tagsToDelete, tag)
 					}
 				}
 
 				if ltFl != "" && fieldFl == "date" {
-					if lCutDate.Before(tag.date) {
+					if lCutDate.Before(tag.Date) {
 						tagsToDelete = append(tagsToDelete, tag)
 					}
 				}
@@ -79,7 +84,7 @@ var (
 
 				fmt.Println("The tags that would have been deleted: ")
 				for _, tag := range tagsToDelete {
-					fmt.Println(tag.name)
+					fmt.Println(tag.Name)
 				}
 
 				return
@@ -117,7 +122,7 @@ var (
 			pb.RenderBlank()
 
 			for _, tag := range tagsToDelete {
-				err := deleteDockerTag(args[0], tag.name)
+				err := deleteDockerTag(args[0], tag.Name)
 				if err != nil {
 					log.Error(err)
 				}
@@ -149,7 +154,7 @@ func deleteDockerTag(image, tag string) error {
 		return errors.New("This command requires Docker Hub credentials to be set in your environment.")
 	}
 
-	resp, err := sendRequest(req, viper.Get("user").(string), viper.Get("pass").(string))
+	resp, err := docker.SendRequest(req, viper.Get("user").(string), viper.Get("pass").(string))
 	if err != nil {
 		return (err)
 	}

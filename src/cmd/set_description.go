@@ -7,6 +7,8 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/felicianotech/sonar/docker"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -40,7 +42,7 @@ var setDescriptionCmd = &cobra.Command{
 			log.Fatal("This command requires Docker Hub credentials to be set in your environment.")
 		}
 
-		resp, err := sendRequest(req, viper.Get("user").(string), viper.Get("pass").(string))
+		resp, err := docker.SendRequest(req, viper.Get("user").(string), viper.Get("pass").(string))
 		if err != nil {
 			log.Fatal(err)
 		}

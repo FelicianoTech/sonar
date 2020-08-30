@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/felicianotech/sonar/docker"
+
 	"github.com/spf13/cobra"
 
 	log "github.com/sirupsen/logrus"
@@ -24,7 +26,10 @@ var (
 				os.Exit(1)
 			}
 
-			dockerLayers := getAllLayers(args[0], args[1])
+			dockerLayers, err := docker.GetAllLayers(args[0], args[1])
+			if err == nil {
+				log.Errorf("Failed getting layers for Docker tag: %s", err)
+			}
 
 			fmt.Println("The layers are: ")
 
@@ -37,19 +42,19 @@ var (
 
 				counter++
 
-				if layer.digest == "" {
+				if layer.Digest == "" {
 					digestStr = "<not-assigned>\t\t\t\t\t\t\t"
 				} else {
-					digestStr = layer.digest
+					digestStr = layer.Digest
 				}
 
-				if layer.size == 0 {
+				if layer.Size == 0 {
 					sizeStr = "0 B\t"
 				} else {
-					sizeStr = ByteCountBinary(layer.size)
+					sizeStr = ByteCountBinary(layer.Size)
 				}
 
-				fmt.Printf("%d:\t%s\t%s\t%.55s\n", counter, digestStr, sizeStr, layer.instruction)
+				fmt.Printf("%d:\t%s\t%s\t%.55s\n", counter, digestStr, sizeStr, layer.Instruction)
 			}
 
 			fmt.Printf("Total layers: %d\n", len(dockerLayers))
