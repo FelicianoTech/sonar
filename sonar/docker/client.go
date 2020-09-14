@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"net/http"
+	"time"
 )
 
 var numRequests int
@@ -47,5 +48,15 @@ func SendRequest(request *http.Request, username, password string) (*http.Respon
 
 	request.Header.Set("Authorization", "JWT "+token)
 
-	return client.Do(request)
+	resp, err := client.Do(request)
+
+	// Docker Hub has a huge problem with their API right now with backends
+	// simply ignoring/dropping requests due to a rate limit that isn' exposed
+	// to the end user. Until this is fixed or more information is given, we're
+	// going to impose a hard 2 second pause. This will kill the speed of Sonar
+	// but will make sure that users' requests, particularly deletion requests,
+	// will actually work instead of returning false positives.
+	time.Sleep(time.Second * 2)
+
+	return resp, err
 }
