@@ -9,6 +9,7 @@ import (
 )
 
 var cfgFile string
+var dockerPassword string
 
 var rootCmd = &cobra.Command{
 	Use:   "sonar",
@@ -29,6 +30,8 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.config/sonar.yml)")
+	rootCmd.PersistentFlags().StringVar(&dockerPassword, "password", "", "Docker password")
+	viper.BindPFlag("pass", rootCmd.PersistentFlags().Lookup("password"))
 }
 
 // initConfig reads in config file and ENV variables if set.
