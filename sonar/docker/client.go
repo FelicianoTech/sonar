@@ -60,3 +60,29 @@ func SendRequest(request *http.Request, username, password string) (*http.Respon
 
 	return resp, err
 }
+
+// Like sendRequest, but the standard Docker Hub registry API.
+func SendRequest2(request *http.Request, image string) (*http.Response, error) {
+
+	client := &http.Client{}
+
+	// Get token
+	resp, err := http.Get("https://auth.docker.io/token?service=registry.docker.io&scope=repository:" + image + ":pull")
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result map[string]string
+
+	json.NewDecoder(resp.Body).Decode(&result)
+
+	token = result["token"]
+
+	request.Header.Set("Authorization", "Bearer "+token)
+	request.Header.Set("Accept", "application/vnd.docker.distribution.manifest.v2+json")
+
+	resp, err = client.Do(request)
+
+	return resp, err
+}
