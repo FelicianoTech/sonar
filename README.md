@@ -45,6 +45,14 @@ Most commands don't need authentication.
 Some, such as `sonar set description`, require Docker / Docker Hub credentials.
 These can be set via the environment variables `DOCKER_USER` and `DOCKER_PASS`.
 
+You can also set the password specifically with the global `--password` flag.
+Please be careful with this, you don't want a password in your shell history.
+The suggestion is to pass an environment variable (that isn't already `DOCKER_PASS`) by doing something like this:
+
+```bash
+sonar set readme my/image --password=$THE_PASSWORD_ENVAR ./file.md
+```
+
 
 ## Features
 
