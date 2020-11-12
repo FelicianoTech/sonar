@@ -24,19 +24,26 @@ Many distros allow you to double-click the file to install.
 Via terminal, you can do the following:
 
 ```bash
-wget https://github.com/felicianotech/sonar/releases/download/v0.4.0/sonar_0.4.0_amd64.deb
-sudo dpkg -i sonar_0.4.0_amd64.deb
+wget https://github.com/felicianotech/sonar/releases/download/v0.8.0/sonar_0.8.0_amd64.deb
+sudo dpkg -i sonar_0.8.0_amd64.deb
 ```
 
-`0.4.0` and `amd64` may need to be replaced with your desired version and CPU architecture respectively.
+`0.8.0` and `amd64` may need to be replaced with your desired version and CPU architecture respectively.
 
 ### Linux Snap
+Sonar can be installed via snap for users of `Ubuntu`, `Pop!_OS`, Debian, Fedora, and more.
+It's an easy installation that always stays up-to-date which is great.
+You can install it by running:
 
-More instructions coming soon.
+```bash
+sudo snap install sonar
+```
 
 ### macOS / Brew
 
-More instructions coming soon.
+```bash
+brew install sonar
+```
 
 
 ## Configuring
