@@ -18,6 +18,7 @@ import (
 var setDescriptionCmd = &cobra.Command{
 	Use:   "summary <image-name> <summary-string>",
 	Short: "Set the summary for an image on Docker Hub",
+	Long:  "Limited to 100 characters.",
 	Run: func(cmd *cobra.Command, args []string) {
 
 		if len(args) < 2 {
