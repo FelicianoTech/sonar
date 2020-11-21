@@ -97,7 +97,7 @@ jobs:
         type: boolean
         default: false
     docker:
-      - image: cibuilds/snapcraft:core20
+      - image: cibuilds/snapcraft:core18
     steps:
       - checkout
       - attach_workspace:
@@ -108,7 +108,9 @@ jobs:
           command: |
             # Generate a version file that Snapcraft can use
             dist/sonar_linux_amd64/sonar version --short > VERSION
-            snapcraft
+            snapcraft --target-arch=amd64 --destructive-mode
+            snapcraft --target-arch=armhf --destructive-mode
+            snapcraft --target-arch=arm64 --destructive-mode
       - when:
           condition: << parameters.publish-edge >>
           steps:
@@ -117,7 +119,9 @@ jobs:
                 command: |
                   # Snapcraft Tokens are valid for 1 year. This one expires August 1st, 2021
                   echo $SNAPCRAFT_LOGIN_FILE | base64 --decode --ignore-garbage | snapcraft login --with -
-                  snapcraft push *.snap --release=edge
+                  snapcraft upload --release=edge *amd64.snap
+                  snapcraft upload --release=edge *armhf.snap
+                  snapcraft upload --release=edge *arm64.snap
       - when:
           condition: << parameters.publish-stable >>
           steps:
@@ -126,4 +130,6 @@ jobs:
                 command: |
                   # Snapcraft Tokens are valid for 1 year. This one expires August 1st, 2021
                   echo $SNAPCRAFT_LOGIN_FILE | base64 --decode --ignore-garbage | snapcraft login --with -
-                  snapcraft push *.snap --release=stable
+                  snapcraft upload --release=edge *amd64.snap
+                  snapcraft upload --release=edge *armhf.snap
+                  snapcraft upload --release=edge *arm64.snap
