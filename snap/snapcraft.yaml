@@ -4,7 +4,7 @@ summary: "A Docker utility."
 description: |
   Sonar is a Docker utility that allows you to display information on Docker images, tags, and layers as well as Docker Hub metrics.
 license: MIT
-base: core20
+base: core18
 grade: stable
 confinement: strict
 adopt-info: sonar
@@ -16,10 +16,26 @@ parts:
     override-build: |
       snapcraftctl build
 
-      cp dist/sonar_linux_amd64/sonar $SNAPCRAFT_PART_INSTALL
+      # Choose binary based on architecture
+      case $SNAPCRAFT_ARCH_TRIPLET in
+        # Linux amd64
+        x86_64-linux-gnu)
+          cp dist/sonar_linux_amd64/sonar $SNAPCRAFT_PART_INSTALL
+          ;;
+        # Linux armhf -> armv7 -> Raspberry Pi 2 B+ and newer/32bit OSs
+        arm-linux-gnueabihf)
+          cp dist/sonar_linux_arm_7/sonar $SNAPCRAFT_PART_INSTALL
+          ;;
+        # Linux arm64 -> armv8 -> Raspberry Pi 3 B+ and newer/64bit OSs
+        aarch64-linux-gnu)
+          cp dist/sonar_linux_arm_7/sonar $SNAPCRAFT_PART_INSTALL
+          ;;
+        *)
+          echo "Error: Unsupported architecture!"
+          exit 1
+      esac
 
       chmod +x $SNAPCRAFT_PART_INSTALL/sonar
-
       snapcraftctl set-version $(cat VERSION)
 
 apps:
