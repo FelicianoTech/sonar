@@ -9,8 +9,8 @@ type packageInfo struct {
 	source      string
 }
 
-type metafile struct {
-	version     string
+type Metafile struct {
+	Version     string
 	publishDate time.Time
 	commitHash  string
 	filePath    string
