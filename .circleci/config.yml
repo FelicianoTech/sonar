@@ -2,6 +2,22 @@ version: 2.1
 
 orbs:
   gor: hubci/goreleaser@1.0
+  osd: circleci/os-detect@0.3.0
+
+executors:
+  linux-docker:
+    docker:
+      - image: cimg/base:2020.09
+  linux-vm:
+    machine:
+      image: ubuntu-2004:202010-01
+  macos:
+    macos:
+      xcode: 11.4
+  windows:
+    machine:
+      image: windows-server-2019-vs2019:stable
+      resource_class: windows.medium
 
 workflows:
   main:
@@ -32,6 +48,16 @@ workflows:
               only: /^master$/
           publish-edge: true
           context: main
+      - test-with-images:
+          requires:
+            - gor/release
+          matrix:
+            parameters:
+              image:
+                - linux-docker
+                - linux-vm
+                - macos
+                #- windows
   release:
     jobs:
       - test:
@@ -133,3 +159,13 @@ jobs:
                   snapcraft upload --release=edge *amd64.snap
                   snapcraft upload --release=edge *armhf.snap
                   snapcraft upload --release=edge *arm64.snap
+  test-with-images:
+    parameters:
+      image:
+        type: executor
+    executor: <<parameters.image>>
+    steps:
+      - osd/init
+      - attach_workspace:
+          at: .
+      - run: ./dist/sonar_${OSD_FAMILY}_amd64/sonar version
