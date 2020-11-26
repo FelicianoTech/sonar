@@ -94,7 +94,7 @@ var (
 			var buf2 bytes.Buffer
 			if err := client.DownloadFromContainer(container.ID, docker.DownloadFromContainerOptions{
 				OutputStream: &buf2,
-				Path:         "/sonar-packages.json",
+				Path:         "/tmp/sonar-packages.json",
 			}); err != nil {
 				log.Error("Error: Failed")
 				log.Fatal(err)
