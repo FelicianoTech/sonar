@@ -146,8 +146,8 @@ jobs:
                   # Snapcraft Tokens are valid for 1 year. This one expires August 1st, 2021
                   echo $SNAPCRAFT_LOGIN_FILE | base64 --decode --ignore-garbage | snapcraft login --with -
                   snapcraft upload --release=edge *amd64.snap
-                  snapcraft upload --release=edge *armhf.snap
                   snapcraft upload --release=edge *arm64.snap
+                  snapcraft upload --release=edge *armhf.snap
       - when:
           condition: << parameters.publish-stable >>
           steps:
@@ -156,9 +156,9 @@ jobs:
                 command: |
                   # Snapcraft Tokens are valid for 1 year. This one expires August 1st, 2021
                   echo $SNAPCRAFT_LOGIN_FILE | base64 --decode --ignore-garbage | snapcraft login --with -
-                  snapcraft upload --release=edge *amd64.snap
-                  snapcraft upload --release=edge *armhf.snap
-                  snapcraft upload --release=edge *arm64.snap
+                  snapcraft upload --release=stable *amd64.snap
+                  snapcraft upload --release=stable *arm64.snap
+                  snapcraft upload --release=stable *armhf.snap
   test-with-images:
     parameters:
       image:
