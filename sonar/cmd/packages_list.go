@@ -81,13 +81,13 @@ var (
 				log.Fatal(err)
 			}
 
-			var buf bytes.Buffer
-			if err := client.Logs(docker.LogsOptions{
-				Container:    container.ID,
-				OutputStream: &buf,
-				Stdout:       true,
-			}); err != nil {
-				log.Error("Error: Failed to retrieve container log.")
+			exitCode, err := client.WaitContainer(container.ID)
+			if err != nil {
+				log.Error("Error: Failed to wait for container.")
+				log.Fatal(err)
+			}
+			if exitCode != 0 {
+				log.Error("Error: Sonar failed to run within the container.")
 				log.Fatal(err)
 			}
 
