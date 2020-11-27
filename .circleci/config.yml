@@ -8,9 +8,13 @@ executors:
   linux-docker:
     docker:
       - image: cimg/base:2020.09
-  linux-vm:
+  linux-amd64:
     machine:
       image: ubuntu-2004:202010-01
+  linux-arm64:
+    machine:
+      image: ubuntu-2004:202011-01
+    resource_class: arm.medium
   macos:
     macos:
       xcode: 11.4
@@ -55,7 +59,8 @@ workflows:
             parameters:
               image:
                 - linux-docker
-                - linux-vm
+                - linux-amd64
+                - linux-arm64
                 - macos
                 #- windows
   release:
@@ -168,4 +173,9 @@ jobs:
       - osd/init
       - attach_workspace:
           at: .
-      - run: ./dist/sonar_${OSD_FAMILY}_amd64/sonar version
+      - run: |
+          if [ $OSD_FAMILY == "linux" ]; then
+            ./dist/sonar_linux_$(dpkg --print-architecture)/sonar version
+          else
+            ./dist/sonar_darwin_amd64/sonar version
+          fi
