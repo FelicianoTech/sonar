@@ -61,11 +61,14 @@ var (
 				log.Fatal(err)
 			}
 
+			// Conbine types into a string
+			types := strings.Join(typeFl, ",")
+
 			container, err := client.CreateContainer(docker.CreateContainerOptions{
 				Name: "sonar-compile",
 				Config: &docker.Config{
 					Image: args[0],
-					Cmd:   []string{"/sonar", "packages", "compile"},
+					Cmd:   []string{"/sonar", "packages", "compile", "--type=" + types},
 				},
 				HostConfig: &docker.HostConfig{
 					Binds: []string{absPath + ":/sonar"},
@@ -96,7 +99,7 @@ var (
 				OutputStream: &buf2,
 				Path:         "/tmp/sonar-packages.json",
 			}); err != nil {
-				log.Error("Error: Failed")
+				log.Error("Error: Failed to retrieve file from container.")
 				log.Fatal(err)
 			}
 
@@ -119,14 +122,14 @@ var (
 				fmt.Printf("%s", jsonData)
 			} else {
 
-				var packages []string
+				var packages []packageInfo
 				err = json.Unmarshal(jsonData, &packages)
 				if err != nil {
 					log.Fatal(err)
 				}
 
 				for _, pkg := range packages {
-					fmt.Println(pkg)
+					fmt.Printf("%s\t%s\t%s\n", pkg.Name, pkg.Version, pkg.Manager)
 				}
 			}
 

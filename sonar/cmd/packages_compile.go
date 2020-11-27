@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os/exec"
+	"strings"
 
 	"github.com/arduino/go-apt-client"
 	"github.com/spf13/cobra"
@@ -13,8 +14,7 @@ import (
 )
 
 var (
-	aptFl bool
-	pipFl bool
+	outputFl string
 
 	packagesCompileCmd = &cobra.Command{
 		Use:    "compile",
@@ -22,36 +22,45 @@ var (
 		Hidden: true,
 		Run: func(cmd *cobra.Command, args []string) {
 
-			if pipFl {
-				packages := listPackagesPip()
+			var packages []packageInfo
 
-				for _, pkg := range packages {
-					fmt.Printf("%s: %s\n", pkg.Name, pkg.Version)
-				}
+			if typeRequested(typeFl, "apt") {
+				packages = append(packages, listPackagesAPT()...)
+			}
 
-				jsonFile, _ := json.Marshal(packages)
-				fmt.Printf("%s", string(jsonFile))
-				_ = ioutil.WriteFile("/tmp/sonar-packages.json", jsonFile, 0644)
+			if typeRequested(typeFl, "pip") {
+				packages = append(packages, listPackagesPIP()...)
+			}
+
+			if typeRequested(typeFl, "rpm") {
+				packages = append(packages, listPackagesRPM()...)
+			}
+
+			jsonFile, _ := json.Marshal(packages)
+
+			if outputFl != "stdout" {
+				_ = ioutil.WriteFile(outputFl, jsonFile, 0644)
 			} else {
-
-				packages := listPackages()
-
-				jsonFile, _ := json.Marshal(packages)
-				fmt.Printf("%s", string(jsonFile))
-				_ = ioutil.WriteFile("/tmp/sonar-packages.json", jsonFile, 0644)
+				fmt.Println(string(jsonFile))
 			}
 		},
 	}
 )
 
 func init() {
-	packagesCompileCmd.Flags().BoolVar(&aptFl, "apt", true, "show apt packages?")
-	packagesCompileCmd.Flags().BoolVar(&pipFl, "pip", false, "show pip packages?")
 
+	packagesCompileCmd.Flags().StringVar(&outputFl, "output", "/tmp/sonar-packages.json", "where to store results, use 'stdout' or a filepath")
 	packagesCmd.AddCommand(packagesCompileCmd)
 }
 
-func listPackages() []packageInfo {
+func commandExists(command string) bool {
+
+	_, err := exec.LookPath(command)
+
+	return err == nil
+}
+
+func listPackagesAPT() []packageInfo {
 
 	var packages []packageInfo
 
@@ -65,6 +74,7 @@ func listPackages() []packageInfo {
 				Name:    pkg.Name,
 				Version: pkg.Version,
 				Manager: "apt",
+				Source:  "self",
 			})
 		}
 	}
@@ -72,7 +82,7 @@ func listPackages() []packageInfo {
 	return packages
 }
 
-func listPackagesPip() []packageInfo {
+func listPackagesPIP() []packageInfo {
 
 	var pipJSON []map[string]string
 	var packages []packageInfo
@@ -98,6 +108,7 @@ func listPackagesPip() []packageInfo {
 				Name:    pkg["name"],
 				Version: pkg["version"],
 				Manager: "pip",
+				Source:  "self",
 			})
 		}
 	}
@@ -105,9 +116,28 @@ func listPackagesPip() []packageInfo {
 	return packages
 }
 
-func commandExists(command string) bool {
+func listPackagesRPM() []packageInfo {
 
-	_, err := exec.LookPath(command)
+	var packages []packageInfo
 
-	return err == nil
+	output, err := exec.Command("rpm", "-qa", "--qf", "%{NAME}\t%{VERSION}\n").Output()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	lines := strings.Split(string(output), "\n")
+	lines = lines[0 : len(lines)-1]
+
+	for _, pkg := range lines {
+
+		pkgSplit := strings.Split(pkg, "\t")
+		packages = append(packages, packageInfo{
+			Name:    pkgSplit[0],
+			Version: pkgSplit[1],
+			Manager: "rpm",
+			Source:  "self",
+		})
+	}
+
+	return packages
 }
