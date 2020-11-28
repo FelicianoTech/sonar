@@ -1,12 +1,21 @@
 name: sonar
 title: "Sonar"
-summary: "A Docker utility."
+summary: "The missing Docker & Docker Hub utility. Quickly query image information."
 description: |
-  Sonar is a Docker utility that allows you to display information on Docker images, tags, and layers as well as Docker Hub metrics.
+  Sonar is the Docker and Docker Hub utility that you've been missing. It can
+  display information on Docker images, tags, and layers including the packages
+  installed in those images.
+
+  Docker Hub metrics such as stars and pulls can be read while tasks such as
+  updating the readme, summary, or even deleting tags from Docker Hub can be
+  done with Sonar.
+
+  The source code can be found on GitHub: https://github.com/felicianotech/sonar
 license: MIT
 base: core18
 grade: stable
 confinement: strict
+icon: img/icon-x512.png
 adopt-info: sonar
 
 parts:
