@@ -1,9 +1,11 @@
 package cmd
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"os/exec"
 	"strings"
 
@@ -23,6 +25,10 @@ var (
 		Run: func(cmd *cobra.Command, args []string) {
 
 			var packages []packageInfo
+
+			if typeRequested(typeFl, "apk") {
+				packages = append(packages, listPackagesAPK()...)
+			}
 
 			if typeRequested(typeFl, "apt") {
 				packages = append(packages, listPackagesAPT()...)
@@ -58,6 +64,45 @@ func commandExists(command string) bool {
 	_, err := exec.LookPath(command)
 
 	return err == nil
+}
+
+func listPackagesAPK() []packageInfo {
+
+	var packages []packageInfo
+
+	file, err := os.Open("/lib/apk/db/installed")
+	if err != nil {
+		return nil
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+
+	for scanner.Scan() {
+
+		line := scanner.Text()
+		if strings.HasPrefix(line, "P:") {
+
+			pkgName := line[2:len(line)]
+			scanner.Scan()
+			line := scanner.Text()
+			pkgVersion := line[2:len(line)]
+
+			packages = append(packages, packageInfo{
+				Name:    pkgName,
+				Version: pkgVersion,
+				Manager: "apk",
+				Source:  "self",
+			})
+		}
+
+	}
+
+	if err := scanner.Err(); err != nil {
+		return nil
+	}
+
+	return packages
 }
 
 func listPackagesAPT() []packageInfo {
