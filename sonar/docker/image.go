@@ -64,16 +64,16 @@ func ParseImageRef(image string) (*ImageRef, error) {
 	}
 
 	// tag processing
-	switch tagIndex := strings.Index(image, ":"); tagIndex {
+	switch tagIndex := strings.Index(name, ":"); tagIndex {
 	case -1:
 		//tag not specified
 	case 0:
-	case len(image) - 1:
+	case len(name) - 1:
 		// invalid location
 		return nil, ErrImageName
 	default:
-		tag = image[tagIndex:len(image)]
-		name = image[:tagIndex]
+		tag = name[tagIndex+1 : len(name)]
+		name = name[:tagIndex]
 	}
 
 	return NewImageRef(namespace, name, tag)
