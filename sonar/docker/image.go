@@ -54,6 +54,7 @@ func ParseImageRef(image string) (*ImageRef, error) {
 	switch nsIndex := strings.Index(image, "/"); nsIndex {
 	case -1:
 		// namespace not specified
+		name = image
 	case 0:
 	case len(image) - 1:
 		// invalid location
