@@ -12,8 +12,8 @@ import (
 )
 
 var getPullsCmd = &cobra.Command{
-	Use:   "pulls <image-name>",
-	Short: "Get the number of pulls for an image on Docker Hub",
+	Use:   "pulls <image> [<image>...]",
+	Short: "Get the number of pulls for one or more images on Docker Hub",
 	Run: func(cmd *cobra.Command, args []string) {
 
 		if len(args) < 1 {
@@ -21,12 +21,22 @@ var getPullsCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		pulls, err := docker.ImagePulls(args[0])
+		images, err := getImageRefs(args)
 		if err != nil {
-			fmt.Errorf("Error retrieving pulls: %s", err)
+			fmt.Errorf("%s, err")
 		}
 
-		fmt.Printf("The number of %v pulls is: %v", args[0], pulls)
+		for _, image := range images {
+
+			image.ShowTag = false
+
+			pulls, err := docker.ImagePulls(image.String())
+			if err != nil {
+				fmt.Errorf("Error retrieving pulls: %s", err)
+			}
+
+			fmt.Printf("The number of %v pulls is: %v\n", image, pulls)
+		}
 	},
 }
 

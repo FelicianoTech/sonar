@@ -14,10 +14,16 @@ type ImageRef struct {
 	Namespace string `json:"namesapce"`
 	Name      string `json:"name"`
 	Tag       string `json:"tag"`
+	ShowTag   bool
 }
 
 func (this *ImageRef) String() string {
-	return fmt.Sprintf("%s/%s:%s", this.Namespace, this.Name, this.Tag)
+
+	if this.ShowTag {
+		return fmt.Sprintf("%s/%s:%s", this.Namespace, this.Name, this.Tag)
+	}
+
+	return fmt.Sprintf("%s/%s", this.Namespace, this.Name)
 }
 
 // NewImageRef creates a new reference to a Docker image.
@@ -36,7 +42,7 @@ func NewImageRef(namespace, name, tag string) (*ImageRef, error) {
 		tag = "latest"
 	}
 
-	return &ImageRef{namespace, name, tag}, nil
+	return &ImageRef{namespace, name, tag, true}, nil
 }
 
 // Convert a string into a full image reference (imageRef).
@@ -54,7 +60,7 @@ func ParseImageRef(image string) (*ImageRef, error) {
 		return nil, ErrImageName
 	default:
 		namespace = image[0:nsIndex]
-		name = image[nsIndex:]
+		name = image[nsIndex+1:]
 	}
 
 	// tag processing
