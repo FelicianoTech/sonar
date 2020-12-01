@@ -12,8 +12,8 @@ import (
 )
 
 var getStarsCmd = &cobra.Command{
-	Use:   "stars <image-name>",
-	Short: "Get the number of stars for an image on Docker Hub",
+	Use:   "stars <image> [<image>...]",
+	Short: "Get the number of stars for one or more images on Docker Hub",
 	Run: func(cmd *cobra.Command, args []string) {
 
 		if len(args) < 1 {
@@ -21,12 +21,22 @@ var getStarsCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		stars, err := docker.ImageStars(args[0])
+		images, err := getImageRefs(args)
 		if err != nil {
-			fmt.Errorf("Error retrieving stars: %s", err)
+			fmt.Errorf("%s, err")
 		}
 
-		fmt.Printf("The number of %v stars is: %v", args[0], stars)
+		for _, image := range images {
+
+			image.ShowTag = false
+
+			stars, err := docker.ImageStars(image.String())
+			if err != nil {
+				fmt.Errorf("Error retrieving stars: %s", err)
+			}
+
+			fmt.Printf("The number of %v stars is: %v\n", image.String(), stars)
+		}
 
 	},
 }
