@@ -1,6 +1,11 @@
 package cmd
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+
+	"github.com/felicianotech/sonar/sonar/docker"
+)
 
 func ByteCountBinary(b uint64) string {
 
@@ -14,4 +19,26 @@ func ByteCountBinary(b uint64) string {
 		exp++
 	}
 	return fmt.Sprintf("%.1f %ciB", float64(b)/float64(div), "KMGTPE"[exp])
+}
+
+func getImageRefs(images []string) ([]*docker.ImageRef, error) {
+
+	var imgRefs []*docker.ImageRef
+
+	if len(images) > 25 {
+
+		return nil, errors.New("Error: image limit is 25.")
+	}
+
+	for _, image := range images {
+
+		imgRef, err := docker.ParseImageRef(image)
+		if err != nil {
+			return nil, err
+		}
+
+		imgRefs = append(imgRefs, imgRef)
+	}
+
+	return imgRefs, nil
 }
