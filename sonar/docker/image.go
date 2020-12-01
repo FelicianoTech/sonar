@@ -2,8 +2,76 @@ package docker
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"net/http"
+	"strings"
 )
+
+var ErrImageName = errors.New("Error: Invalid image name.")
+
+type ImageRef struct {
+	Namespace string `json:"namesapce"`
+	Name      string `json:"name"`
+	Tag       string `json:"tag"`
+}
+
+func (this *ImageRef) String() string {
+	return fmt.Sprintf("%s/%s:%s", this.Namespace, this.Name, this.Tag)
+}
+
+// NewImageRef creates a new reference to a Docker image.
+// Namespace and tag can be empty strings in order to use Docker defaults of 'library' and 'latest'.
+func NewImageRef(namespace, name, tag string) (*ImageRef, error) {
+
+	if name == "" {
+		return nil, errors.New("The image name must be specified.")
+	}
+
+	if namespace == "" {
+		namespace = "library"
+	}
+
+	if tag == "" {
+		tag = "latest"
+	}
+
+	return &ImageRef{namespace, name, tag}, nil
+}
+
+// Convert a string into a full image reference (imageRef).
+func ParseImageRef(image string) (*ImageRef, error) {
+
+	var namespace, name, tag string
+
+	// namespace processing
+	switch nsIndex := strings.Index(image, "/"); nsIndex {
+	case -1:
+		// namespace not specified
+	case 0:
+	case len(image) - 1:
+		// invalid location
+		return nil, ErrImageName
+	default:
+		namespace = image[0:nsIndex]
+		name = image[nsIndex:]
+	}
+
+	// tag processing
+	switch tagIndex := strings.Index(image, ":"); tagIndex {
+	case -1:
+		//tag not specified
+	case 0:
+	case len(image) - 1:
+		// invalid location
+		return nil, ErrImageName
+	default:
+		tag = image[tagIndex:len(image)]
+		name = image[:tagIndex]
+	}
+
+	return NewImageRef(namespace, name, tag)
+}
 
 func ImagePulls(image string) (uint, error) {
 
