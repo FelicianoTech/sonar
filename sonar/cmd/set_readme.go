@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"strconv"
 
 	"github.com/felicianotech/sonar/sonar/docker"
@@ -26,12 +25,8 @@ refers to the summary as a description and the old description as a readme.`,
 	// full_description. Since we previously called readme description, this
 	// alias allows for a smooth transition over to the new names.
 	Aliases: []string{"description"},
+	Args:    cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-
-		if len(args) < 2 {
-			log.Fatal("Please provide a text file.")
-			os.Exit(1)
-		}
 
 		content, err := ioutil.ReadFile(args[1])
 		if err != nil {

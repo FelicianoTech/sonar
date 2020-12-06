@@ -2,23 +2,16 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/gopherlibs/pmm/pmm"
 	"github.com/spf13/cobra"
-
-	log "github.com/sirupsen/logrus"
 )
 
 var packagesDiffCmd = &cobra.Command{
 	Use:   "diff <image> <image>",
 	Short: "Displays the difference in installed packages between two Docker images",
+	Args:  cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-
-		if len(args) != 2 {
-			log.Fatal("Please provide exactly two Docker image names.")
-			os.Exit(1)
-		}
 
 		images, err := getImageRefs(args)
 		if err != nil {

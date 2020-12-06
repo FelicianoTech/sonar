@@ -25,12 +25,8 @@ var (
 	packagesListCmd = &cobra.Command{
 		Use:   "list <image>",
 		Short: "Displays installed packages for a given Docker image",
+		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-
-			if len(args) == 0 {
-				log.Fatal("Please provide a Docker image name.")
-				os.Exit(1)
-			}
 
 			if formatFl != "terminal" && formatFl != "json" {
 

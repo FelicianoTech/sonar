@@ -16,6 +16,7 @@ var (
 		Use:    "compile",
 		Short:  "Displays installed packages for the system",
 		Hidden: true,
+		Args:   cobra.NoArgs,
 		Run: func(cmd *cobra.Command, args []string) {
 
 			var packages []pmm.PkgInfo
