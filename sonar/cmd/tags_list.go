@@ -18,12 +18,8 @@ var (
 	tagsListCmd = &cobra.Command{
 		Use:   "list <image-name>",
 		Short: "Displays tags for a given Docker image name",
+		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-
-			if len(args) == 0 {
-				log.Fatal("Please provide a Docker image name.")
-				os.Exit(1)
-			}
 
 			if fieldFl != "date" && fieldFl != "" {
 				log.Fatal("if 'field' is set it must be 'date'.")

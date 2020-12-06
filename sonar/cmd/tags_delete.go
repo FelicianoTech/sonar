@@ -24,12 +24,8 @@ var (
 	tagsDeleteCmd = &cobra.Command{
 		Use:   "delete <image-name>",
 		Short: "Deletes one or more tags based on a parameter",
+		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-
-			if len(args) == 0 {
-				log.Fatal("Please provide a Docker image name.")
-				os.Exit(1)
-			}
 
 			if fieldFl != "date" {
 				log.Fatal("'field' is a required field and must be 'date'.")

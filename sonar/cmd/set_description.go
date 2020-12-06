@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"net/http"
-	"os"
 	"strconv"
 
 	"github.com/felicianotech/sonar/sonar/docker"
@@ -19,12 +18,8 @@ var setDescriptionCmd = &cobra.Command{
 	Use:   "summary <image-name> <summary-string>",
 	Short: "Set the summary for an image on Docker Hub",
 	Long:  "Limited to 100 characters.",
+	Args:  cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-
-		if len(args) < 2 {
-			log.Fatal("Please provide a summary string.")
-			os.Exit(1)
-		}
 
 		// Escape file content for use in JSON
 		content := []byte(strconv.Quote(args[1]))

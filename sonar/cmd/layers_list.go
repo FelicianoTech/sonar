@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/felicianotech/sonar/sonar/docker"
 
@@ -14,14 +13,9 @@ import (
 var layersListCmd = &cobra.Command{
 	Use:   "list <image>",
 	Short: "Displays the layers for a given Docker image",
-	Long: `The output of instruction is limited to 55 characters.
-`,
+	Long:  `The output of instruction is limited to 55 characters.`,
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-
-		if len(args) == 0 {
-			log.Fatal("Please provide a Docker image.")
-			os.Exit(1)
-		}
 
 		image, err := docker.ParseImageRef(args[0])
 		if err != nil {

@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/felicianotech/sonar/sonar/docker"
 
@@ -14,12 +13,8 @@ import (
 var imagesListCmd = &cobra.Command{
 	Use:   "list <namespace>",
 	Short: "Displays a list of images for a given Docker Hub namespace",
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-
-		if len(args) == 0 {
-			log.Fatal("Please provide a Docker Hub namespace.")
-			os.Exit(1)
-		}
 
 		images, err := docker.ImageList(args[0])
 		if err != nil {
