@@ -1,18 +1,12 @@
 package cmd
 
 import (
-	"bufio"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"os"
-	"os/exec"
-	"strings"
 
-	"github.com/arduino/go-apt-client"
+	"github.com/gopherlibs/pmm/pmm"
 	"github.com/spf13/cobra"
-
-	log "github.com/sirupsen/logrus"
 )
 
 var (
@@ -24,22 +18,46 @@ var (
 		Hidden: true,
 		Run: func(cmd *cobra.Command, args []string) {
 
-			var packages []packageInfo
+			var packages []pmm.PkgInfo
 
 			if typeRequested(typeFl, "apk") {
-				packages = append(packages, listPackagesAPK()...)
+
+				apk, err := pmm.New(pmm.TypeAPK)
+				if err != nil {
+					fmt.Errorf("Error: APK is not available - %s", err)
+				} else {
+					packages = append(packages, apk.List()...)
+				}
 			}
 
 			if typeRequested(typeFl, "apt") {
-				packages = append(packages, listPackagesAPT()...)
+
+				apt, err := pmm.New(pmm.TypeAPT)
+				if err != nil {
+					fmt.Errorf("Error: APT is not available - %s", err)
+				} else {
+					packages = append(packages, apt.List()...)
+				}
 			}
 
 			if typeRequested(typeFl, "pip") {
-				packages = append(packages, listPackagesPIP()...)
+
+				pip, err := pmm.New(pmm.TypePIP)
+				if err != nil {
+					fmt.Errorf("Error: PIP is not available - %s", err)
+				} else {
+					packages = append(packages, pip.List()...)
+				}
 			}
 
 			if typeRequested(typeFl, "rpm") {
-				packages = append(packages, listPackagesRPM()...)
+
+				rpm, err := pmm.New(pmm.TypeRPM)
+				if err != nil {
+					fmt.Errorf("Error: RPM is not available - %s", err)
+				} else {
+					packages = append(packages, rpm.List()...)
+				}
 			}
 
 			jsonFile, _ := json.Marshal(packages)
@@ -57,132 +75,4 @@ func init() {
 
 	packagesCompileCmd.Flags().StringVar(&outputFl, "output", "/tmp/sonar-packages.json", "where to store results, use 'stdout' or a filepath")
 	packagesCmd.AddCommand(packagesCompileCmd)
-}
-
-func commandExists(command string) bool {
-
-	_, err := exec.LookPath(command)
-
-	return err == nil
-}
-
-func listPackagesAPK() []packageInfo {
-
-	var packages []packageInfo
-
-	file, err := os.Open("/lib/apk/db/installed")
-	if err != nil {
-		return nil
-	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-
-	for scanner.Scan() {
-
-		line := scanner.Text()
-		if strings.HasPrefix(line, "P:") {
-
-			pkgName := line[2:len(line)]
-			scanner.Scan()
-			line := scanner.Text()
-			pkgVersion := line[2:len(line)]
-
-			packages = append(packages, packageInfo{
-				Name:    pkgName,
-				Version: pkgVersion,
-				Manager: "apk",
-				Source:  "self",
-			})
-		}
-
-	}
-
-	if err := scanner.Err(); err != nil {
-		return nil
-	}
-
-	return packages
-}
-
-func listPackagesAPT() []packageInfo {
-
-	var packages []packageInfo
-
-	allPackages, _ := apt.List()
-
-	for _, pkg := range allPackages {
-
-		if pkg.Status == "installed" {
-
-			packages = append(packages, packageInfo{
-				Name:    pkg.Name,
-				Version: pkg.Version,
-				Manager: "apt",
-				Source:  "self",
-			})
-		}
-	}
-
-	return packages
-}
-
-func listPackagesPIP() []packageInfo {
-
-	var pipJSON []map[string]string
-	var packages []packageInfo
-
-	for _, pipCmd := range []string{"pip", "pip3"} {
-
-		if !commandExists(pipCmd) {
-			continue
-		}
-
-		output, err := exec.Command(pipCmd, "list", "--format=json").Output()
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		err = json.Unmarshal(output, &pipJSON)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		for _, pkg := range pipJSON {
-			packages = append(packages, packageInfo{
-				Name:    pkg["name"],
-				Version: pkg["version"],
-				Manager: "pip",
-				Source:  "self",
-			})
-		}
-	}
-
-	return packages
-}
-
-func listPackagesRPM() []packageInfo {
-
-	var packages []packageInfo
-
-	output, err := exec.Command("rpm", "-qa", "--qf", "%{NAME}\t%{VERSION}\n").Output()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	lines := strings.Split(string(output), "\n")
-	lines = lines[0 : len(lines)-1]
-
-	for _, pkg := range lines {
-
-		pkgSplit := strings.Split(pkg, "\t")
-		packages = append(packages, packageInfo{
-			Name:    pkgSplit[0],
-			Version: pkgSplit[1],
-			Manager: "rpm",
-			Source:  "self",
-		})
-	}
-
-	return packages
 }

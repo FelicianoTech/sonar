@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/gopherlibs/pmm/pmm"
 	"github.com/spf13/cobra"
 
 	log "github.com/sirupsen/logrus"
@@ -27,7 +28,7 @@ var packagesDiffCmd = &cobra.Command{
 		packages1 := listPackages(images[0])
 		packages2 := listPackages(images[1])
 
-		diffPackages := pkgMissingFromA(packages2, packages1)
+		diffPackages := pmm.PkgMissingFromA(packages2, packages1)
 		fmt.Printf("Packages only in %s\n", images[0].String())
 		fmt.Println("==============================")
 		for _, pkg := range diffPackages {
@@ -36,7 +37,7 @@ var packagesDiffCmd = &cobra.Command{
 
 		fmt.Printf("\n")
 
-		diffPackages = pkgMissingFromA(packages1, packages2)
+		diffPackages = pmm.PkgMissingFromA(packages1, packages2)
 		fmt.Printf("Packages only in %s\n", images[1].String())
 		fmt.Println("==============================")
 		for _, pkg := range diffPackages {
@@ -47,24 +48,4 @@ var packagesDiffCmd = &cobra.Command{
 
 func init() {
 	packagesCmd.AddCommand(packagesDiffCmd)
-}
-
-func pkgMissingFromA(listA, listB []packageInfo) []packageInfo {
-
-	listAMap := make(map[string]packageInfo, len(listA))
-
-	bOnlyPkgs := []packageInfo{}
-
-	for _, v := range listA {
-		listAMap[v.Name] = v
-	}
-
-	for _, v := range listB {
-
-		if _, found := listAMap[v.Name]; !found {
-			bOnlyPkgs = append(bOnlyPkgs, v)
-		}
-	}
-
-	return bOnlyPkgs
 }

@@ -12,6 +12,7 @@ import (
 
 	"github.com/felicianotech/sonar/sonar/docker"
 
+	"github.com/gopherlibs/pmm/pmm"
 	"github.com/spf13/cobra"
 
 	docker2 "github.com/fsouza/go-dockerclient"
@@ -68,7 +69,7 @@ func init() {
 	packagesCmd.AddCommand(packagesListCmd)
 }
 
-func listPackages(imgRef *docker.ImageRef) []packageInfo {
+func listPackages(imgRef *docker.ImageRef) []pmm.PkgInfo {
 
 	image := imgRef.String()
 
@@ -99,7 +100,7 @@ func listPackages(imgRef *docker.ImageRef) []packageInfo {
 		log.Fatal(err)
 	}
 
-	// Conbine types into a string
+	// Combine types into a string
 	types := strings.Join(typeFl, ",")
 
 	container, err := client.CreateContainer(docker2.CreateContainerOptions{
@@ -164,7 +165,7 @@ func listPackages(imgRef *docker.ImageRef) []packageInfo {
 		log.Fatal(err)
 	}
 
-	var packages []packageInfo
+	var packages []pmm.PkgInfo
 	err = json.Unmarshal(jsonData, &packages)
 	if err != nil {
 		log.Fatal(err)
