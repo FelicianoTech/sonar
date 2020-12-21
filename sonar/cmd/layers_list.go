@@ -6,8 +6,6 @@ import (
 	"github.com/felicianotech/sonar/sonar/docker"
 
 	"github.com/spf13/cobra"
-
-	log "github.com/sirupsen/logrus"
 )
 
 var layersListCmd = &cobra.Command{
@@ -15,18 +13,18 @@ var layersListCmd = &cobra.Command{
 	Short: "Displays the layers for a given Docker image",
 	Long:  `The output of instruction is limited to 55 characters.`,
 	Args:  cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 
 		image, err := docker.ParseImageRef(args[0])
 		if err != nil {
-			fmt.Errorf("%s, err")
+			return fmt.Errorf("%s", err)
 		}
 
 		image.ShowTag = false
 
 		dockerLayers, err := docker.GetAllLayers(image.String(), image.Tag)
 		if err != nil {
-			log.Errorf("Failed getting layers for Docker tag: %s", err)
+			return fmt.Errorf("Failed getting layers for Docker tag: %s", err)
 		}
 
 		fmt.Println("The layers are: ")
@@ -56,6 +54,8 @@ var layersListCmd = &cobra.Command{
 		}
 
 		fmt.Printf("Total layers: %d\n", len(dockerLayers))
+
+		return nil
 	},
 }
 
