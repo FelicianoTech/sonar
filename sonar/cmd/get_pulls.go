@@ -12,11 +12,11 @@ var getPullsCmd = &cobra.Command{
 	Use:   "pulls <image> [<image>...]",
 	Short: "Get the number of pulls for one or more images on Docker Hub",
 	Args:  cobra.MinimumNArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 
 		images, err := getImageRefs(args)
 		if err != nil {
-			fmt.Errorf("%s, err")
+			return err
 		}
 
 		for _, image := range images {
@@ -30,6 +30,8 @@ var getPullsCmd = &cobra.Command{
 
 			fmt.Printf("The number of %v pulls is: %v\n", image, pulls)
 		}
+
+		return nil
 	},
 }
 

@@ -25,7 +25,7 @@ var (
 		Use:   "delete <image-name>",
 		Short: "Deletes one or more tags based on a parameter",
 		Args:  cobra.ExactArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 
 			if fieldFl != "date" {
 				log.Fatal("'field' is a required field and must be 'date'.")
@@ -39,19 +39,19 @@ var (
 
 			gDuration, err := parseDuration(gtFl)
 			if err != nil {
-				fmt.Errorf("Cannot parse duration from 'gt'", err)
+				return fmt.Errorf("Cannot parse duration from 'gt': %s", err)
 			}
 			gCutDate := time.Now().Add(-gDuration)
 
 			lDuration, err := parseDuration(ltFl)
 			if err != nil {
-				fmt.Errorf("Cannot parse duration from 'lt'", err)
+				return fmt.Errorf("Cannot parse duration from 'lt': %s", err)
 			}
 			lCutDate := time.Now().Add(-lDuration)
 
 			dockerTags, err := docker.GetAllTags(args[0])
 			if err != nil {
-				fmt.Errorf("Failed retrieving Docker tags", err)
+				return fmt.Errorf("Failed retrieving Docker tags: %s", err)
 			}
 			var tagsToDelete []docker.Tag
 
@@ -73,7 +73,7 @@ var (
 			if len(tagsToDelete) == 0 {
 
 				fmt.Println("There were no tags to delete.")
-				return
+				return nil
 			}
 
 			if dryRunFl {
@@ -83,7 +83,7 @@ var (
 					fmt.Println(tag.Name)
 				}
 
-				return
+				return nil
 			}
 
 			if !yesFl {
@@ -92,7 +92,7 @@ var (
 				for scanner.Scan() {
 					if scanner.Text() == "n" || scanner.Text() == "no" {
 						fmt.Println("Cancelling.")
-						return
+						return nil
 					} else if scanner.Text() == "y" || scanner.Text() == "yes" {
 						break
 					} else {
@@ -120,11 +120,13 @@ var (
 			for _, tag := range tagsToDelete {
 				err := deleteDockerTag(args[0], tag.Name)
 				if err != nil {
-					log.Error(err)
+					return err
 				}
 
 				pb.Add(1)
 			}
+
+			return nil
 		},
 	}
 )

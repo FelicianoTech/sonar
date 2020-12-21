@@ -19,7 +19,7 @@ var (
 		Use:   "list <image-name>",
 		Short: "Displays tags for a given Docker image name",
 		Args:  cobra.ExactArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 
 			if fieldFl != "date" && fieldFl != "" {
 				log.Fatal("if 'field' is set it must be 'date'.")
@@ -28,19 +28,19 @@ var (
 
 			gDuration, err := parseDuration(gtFl)
 			if err != nil {
-				fmt.Errorf("Cannot parse duration from 'gt'", err)
+				return fmt.Errorf("Cannot parse duration from 'gt': %s", err)
 			}
 			gCutDate := time.Now().Add(-gDuration)
 
 			lDuration, err := parseDuration(ltFl)
 			if err != nil {
-				fmt.Errorf("Cannot parse duration from 'lt'", err)
+				return fmt.Errorf("Cannot parse duration from 'lt': %s", err)
 			}
 			lCutDate := time.Now().Add(-lDuration)
 
 			dockerTags, err := docker.GetAllTags(args[0])
 			if err != nil {
-				fmt.Errorf("Failed retrieving Docker tags", err)
+				return fmt.Errorf("Failed retrieving Docker tags: %s", err)
 			}
 			var filteredTags []docker.Tag
 
@@ -66,7 +66,7 @@ var (
 			if len(filteredTags) == 0 {
 
 				fmt.Println("There were no tags to list.")
-				return
+				return nil
 			}
 
 			var totalSize uint64
@@ -83,6 +83,8 @@ var (
 			if sumSizeFl {
 				fmt.Printf("Total size: %s\n", ByteCountBinary(totalSize))
 			}
+
+			return nil
 		},
 	}
 )

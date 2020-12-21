@@ -11,11 +11,11 @@ var packagesDiffCmd = &cobra.Command{
 	Use:   "diff <image> <image>",
 	Short: "Displays the difference in installed packages between two Docker images",
 	Args:  cobra.ExactArgs(2),
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 
 		images, err := getImageRefs(args)
 		if err != nil {
-			fmt.Errorf("%s, err")
+			return fmt.Errorf("%s", err)
 		}
 
 		packages1 := listPackages(images[0])
@@ -36,6 +36,8 @@ var packagesDiffCmd = &cobra.Command{
 		for _, pkg := range diffPackages {
 			fmt.Printf("%s\t\t%s\t%s\n", pkg.Name, pkg.Version, pkg.Manager)
 		}
+
+		return nil
 	},
 }
 
