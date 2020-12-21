@@ -120,7 +120,7 @@ func ImageStars(image string) (uint, error) {
 
 func ImageList(namespace string) ([]string, error) {
 
-	req, err := http.NewRequest("GET", "https://hub.docker.com/v3/repositories/"+namespace+"/", nil)
+	req, err := http.NewRequest("GET", "https://hub.docker.com/v2/repositories/"+namespace+"/", nil)
 	if err != nil {
 		return nil, err
 	}
