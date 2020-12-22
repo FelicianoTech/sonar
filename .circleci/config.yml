@@ -114,7 +114,10 @@ jobs:
           command: cd sonar && go mod download
       - run:
           name: "Run Tests"
-          command: cd sonar && go test
+          command: cd sonar && gotestsum ./...
+      - run:
+          name: "Upload to Codecov"
+          command: cd sonar && bash <(curl -s https://codecov.io/bash)
       - save_cache:
           key: go-mod-v1
           paths:
