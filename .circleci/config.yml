@@ -104,24 +104,34 @@ jobs:
   test:
     docker:
       - image: cimg/go:1.15.6
+    environment:
+      GOTESTSUM_JUNITFILE: "junit/unit-tests.xml"
     steps:
       - checkout
       - restore_cache:
           keys:
-            - go-mod-v1
+            - go-mod-v2-{{ checksum "go.sum" }}
       - run:
           name: "Download Dependancies"
           command: cd sonar && go mod download
       - run:
-          name: "Run Tests"
-          command: cd sonar && gotestsum ./...
+          name: "Run Tests & Coverage"
+          command: |
+            cd ./sonar
+            mkdir junit
+            gotestsum -- -coverprofile=coverage.txt -covermode=atomic ./...
+            bash <(curl -s https://codecov.io/bash)
+      - store_test_results:
+          path: junit
+      - store_artifacts:
+          path: junit/unit-tests.xml
       - run:
           name: "Upload to Codecov"
           command: cd sonar && bash <(curl -s https://codecov.io/bash)
       - save_cache:
-          key: go-mod-v1
+          key: go-mod-v2-{{ checksum "go.sum" }}
           paths:
-            - "/go/pkg/mod"
+            - "/home/circleci/.cache/go-build"
   build-snap:
     parameters:
       publish-edge:
