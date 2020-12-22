@@ -17,7 +17,7 @@ executors:
     resource_class: arm.medium
   macos:
     macos:
-      xcode: 11.4
+      xcode: 12.3.0
   windows:
     machine:
       image: windows-server-2019-vs2019:stable
@@ -29,7 +29,7 @@ workflows:
       - test
       - gor/release:
           version: "0.149.0"
-          go-version: "1.15.5"
+          go-version: "1.15.6"
           dry-run: true
           post-steps:
             - persist_to_workspace:
@@ -74,7 +74,7 @@ workflows:
               only: /^v\d+\.\d+\.\d+$/
       - gor/release:
           version: "0.149.0"
-          go-version: "1.15.5"
+          go-version: "1.15.6"
           filters:
             branches:
               ignore: /.*/
@@ -103,7 +103,7 @@ workflows:
 jobs:
   test:
     docker:
-      - image: cimg/go:1.15.5
+      - image: cimg/go:1.15.6
     steps:
       - checkout
       - restore_cache:
