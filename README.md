@@ -32,7 +32,12 @@ You can install Sonar via snap by running in a terminal:
 
 ```bash
 sudo snap install sonar
+sudo snap connect sonar:docker docker
 ```
+
+The latter command is needed if you use commands such as `sonar packages list`.
+This is only available in Sonar edge right now.
+It'll be available in the v0.14 release.
 
 If you don't have the `snap` command available, you might be able to find instructions for your distro [here](https://docs.snapcraft.io/core/install).
 

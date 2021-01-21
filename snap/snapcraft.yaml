@@ -51,5 +51,6 @@ apps:
   sonar:
     command: sonar
     plugs:
+      - docker
       - home
       - network
