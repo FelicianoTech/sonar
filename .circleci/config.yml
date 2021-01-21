@@ -63,6 +63,9 @@ workflows:
                 - linux-arm64
                 - macos
                 #- windows
+      - functional-tests:
+          requires:
+            - gor/release
   release:
     jobs:
       - test:
@@ -191,4 +194,51 @@ jobs:
             ./dist/sonar_linux_$(dpkg --print-architecture)/sonar version
           else
             ./dist/sonar_darwin_amd64/sonar version
+          fi
+  functional-tests:
+    executor: linux-amd64
+    steps:
+      - attach_workspace:
+          at: .
+      - run: |
+          mv ./dist/sonar_linux_amd64/sonar ~/bin/
+
+          output=$(sonar images list ftechtest)
+
+          if ! echo $output | grep -q "ubuntu"; then
+            echo "Error: When running 'sonar images list ftechtest', the 'ubuntu' image is missing."
+            echo ""
+            echo "Here's the output:"
+            echo ""
+            echo "====="
+            echo $output
+            echo "====="
+            echo ""
+            exit 1
+          fi
+
+          if ! echo $output | grep -q "dummy"; then
+            echo "Error: When running 'sonar images list ftechtest', the 'dummy' image is missing."
+            echo ""
+            echo "Here's the output:"
+            echo ""
+            echo "====="
+            echo $output
+            echo "====="
+            echo ""
+            exit 1
+          fi
+
+          output=$(sonar packages list ftechtest/apt:2020.01.21)
+
+          if ! echo $output | grep -q "cowsay"; then
+            echo "Error: When running 'sonar packages list ftechtest/apt:2020.01.21', the 'cowsay' package is missing."
+            echo ""
+            echo "Here's the output:"
+            echo ""
+            echo "====="
+            echo $output
+            echo "====="
+            echo ""
+            exit 1
           fi
