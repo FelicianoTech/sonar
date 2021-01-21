@@ -17,5 +17,5 @@ func Install() error {
 
 func Remove() error {
 
-	return sh.Run("go", "clean", "-i", "github.com/felicianotech/sonar")
+	return sh.Run("go", "clean", "-i", "github.com/felicianotech/sonar/sonar")
 }
