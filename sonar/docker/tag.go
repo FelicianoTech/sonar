@@ -7,9 +7,10 @@ import (
 )
 
 type Tag struct {
-	Name string
-	Size uint64
-	Date time.Time
+	Name   string
+	Size   uint64
+	Date   time.Time
+	Digest string
 }
 
 func GetAllTags(image string) ([]Tag, error) {
@@ -41,6 +42,8 @@ func GetAllTags(image string) ([]Tag, error) {
 			aTag.Name = v.(map[string]interface{})["name"].(string)
 			aTag.Size = uint64(v.(map[string]interface{})["full_size"].(float64))
 			aTag.Date, err = time.Parse(time.RFC3339, v.(map[string]interface{})["last_updated"].(string))
+			anImage := v.(map[string]interface{})["images"].([]interface{})[0]
+			aTag.Digest = anImage.(map[string]interface{})["digest"].(string)
 			if err != nil {
 				return nil, err
 			}
