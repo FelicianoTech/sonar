@@ -7,13 +7,13 @@ orbs:
 executors:
   linux-docker:
     docker:
-      - image: cimg/base:2020.12
+      - image: cimg/base:2021.03
   linux-amd64:
     machine:
-      image: ubuntu-2004:202010-01
+      image: ubuntu-2004:202101-01
   linux-arm64:
     machine:
-      image: ubuntu-2004:202011-01
+      image: ubuntu-2004:202101-01
     resource_class: arm.medium
   macos:
     macos:
@@ -28,8 +28,8 @@ workflows:
     jobs:
       - test
       - gor/release:
-          version: "0.149.0"
-          go-version: "1.15.6"
+          version: "0.158.0"
+          go-version: "1.16"
           dry-run: true
           post-steps:
             - persist_to_workspace:
@@ -76,8 +76,8 @@ workflows:
               # Simplified SemVer regex
               only: /^v\d+\.\d+\.\d+$/
       - gor/release:
-          version: "0.149.0"
-          go-version: "1.15.6"
+          version: "0.158.0"
+          go-version: "1.16"
           filters:
             branches:
               ignore: /.*/
@@ -106,7 +106,7 @@ workflows:
 jobs:
   test:
     docker:
-      - image: cimg/go:1.15.6
+      - image: cimg/go:1.16
     environment:
       GOTESTSUM_JUNITFILE: "junit/unit-tests.xml"
     steps:
