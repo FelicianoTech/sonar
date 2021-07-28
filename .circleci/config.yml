@@ -42,14 +42,14 @@ workflows:
             - gor/release
           filters:
             branches:
-              ignore: /^master$/
+              ignore: /^trunk$/
       - build-snap:
           name: "Build 'edge' Snap"
           requires:
             - gor/release
           filters:
             branches:
-              only: /^master$/
+              only: /^trunk$/
           publish-edge: true
           context: main
       - test-with-images:
