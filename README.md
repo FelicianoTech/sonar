@@ -1,6 +1,6 @@
 ![Sonar banner](./img/github-banner.png)
 
-# Sonar - the Docker utility [![CI Status](https://circleci.com/gh/felicianotech/sonar.svg?style=shield)](https://app.circleci.com/pipelines/github/felicianotech/sonar) [![Software License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/felicianotech/sonar/master/LICENSE) [![CircleCI Orb Version](https://img.shields.io/badge/endpoint.svg?url=https://badges.circleci.io/orb/hubci/sonar)][orb-page]
+# Sonar - the Docker utility [![CI Status](https://circleci.com/gh/felicianotech/sonar.svg?style=shield)](https://app.circleci.com/pipelines/github/felicianotech/sonar) [![Software License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/felicianotech/sonar/trunk/LICENSE) [![CircleCI Orb Version](https://img.shields.io/badge/endpoint.svg?url=https://badges.circleci.io/orb/hubci/sonar)][orb-page]
 
 Sonar is the Docker and Docker Hub utility that you've been missing.
 It can display information on Docker images, tags, and layers including the packages installed in those images.
