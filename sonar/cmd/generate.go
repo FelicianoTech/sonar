@@ -12,7 +12,7 @@ import (
 
 var generateCmd = &cobra.Command{
 	Use:   "generate",
-	Short: "",
+	Short: "Generate meta.json file",
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("generate called")
 
