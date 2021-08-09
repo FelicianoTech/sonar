@@ -1,19 +1,37 @@
 package metafile
 
-import "time"
+import (
+	"net/url"
+	"time"
+)
 
-type packageInfo struct {
-	name        string
-	version     string
-	packageType string
-	source      string
+type DockerInfo struct {
+	Namespace string
+	Name      string
+	Tags      []string
+}
+
+type GitInfo struct {
+	Remote   url.URL
+	Hash     string
+	Filepath string
+}
+
+type PackageInfo struct {
+	Name        string
+	Version     string
+	PackageType string
+	Source      string
 }
 
 type Metafile struct {
 	Version     string
-	publishDate time.Time
-	commitHash  string
-	filePath    string
-	fileRepo    string
-	packages    []packageInfo
+	Generator   string
+	Date        time.Time
+	Description string
+	Home        url.URL
+	Docs        url.URL
+	Docker      DockerInfo
+	Git         GitInfo
+	Packages    []PackageInfo
 }
