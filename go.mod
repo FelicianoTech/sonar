@@ -6,7 +6,7 @@ require (
 	github.com/Microsoft/go-winio v0.5.0 // indirect
 	github.com/fsouza/go-dockerclient v1.7.4
 	github.com/gopherlibs/pmm v0.1.1
-	github.com/magefile/mage v1.10.0
+	github.com/magefile/mage v1.11.0
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/schollz/progressbar/v3 v3.8.2
 	github.com/sirupsen/logrus v1.8.1
