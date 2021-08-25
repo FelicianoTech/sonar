@@ -10,7 +10,7 @@ require (
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/schollz/progressbar/v3 v3.4.0
 	github.com/sirupsen/logrus v1.8.1
-	github.com/spf13/cobra v1.1.1
+	github.com/spf13/cobra v1.2.1
 	github.com/spf13/viper v1.8.1
 )
 
