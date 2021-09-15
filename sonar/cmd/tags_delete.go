@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/felicianotech/sonar/sonar/docker"
@@ -22,32 +23,21 @@ var (
 	yesFl    bool
 
 	tagsDeleteCmd = &cobra.Command{
-		Use:   "delete <image-name>",
+		Use: `delete <image-name> <tag>[,<tag>[...]]
+delete <image-name> --field`,
 		Short: "Deletes one or more tags based on a parameter",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.RangeArgs(1, 2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
-			if fieldFl != "date" {
-				log.Fatal("'field' is a required field and must be 'date'.")
+			if fieldFl != "date" && fieldFl != "name" {
+				log.Fatal("'field' is not valid.")
 				os.Exit(1)
 			}
 
-			if gtFl == "" && ltFl == "" {
+			if gtFl == "" && ltFl == "" && fieldFl != "name" {
 				log.Fatal("Either the 'gt' or 'lt' flags need to be set.")
 				os.Exit(1)
 			}
-
-			gDuration, err := parseDuration(gtFl)
-			if err != nil {
-				return fmt.Errorf("Cannot parse duration from 'gt': %s", err)
-			}
-			gCutDate := time.Now().Add(-gDuration)
-
-			lDuration, err := parseDuration(ltFl)
-			if err != nil {
-				return fmt.Errorf("Cannot parse duration from 'lt': %s", err)
-			}
-			lCutDate := time.Now().Add(-lDuration)
 
 			dockerTags, err := docker.GetAllTags(args[0])
 			if err != nil {
@@ -55,19 +45,50 @@ var (
 			}
 			var tagsToDelete []docker.Tag
 
-			for _, tag := range dockerTags {
+			if fieldFl == "name" {
 
-				if gtFl != "" && fieldFl == "date" {
-					if gCutDate.After(tag.Date) {
-						tagsToDelete = append(tagsToDelete, tag)
+				tagArgs := strings.Split(args[1], ",")
+
+				for _, tArg := range tagArgs {
+					for _, tag := range dockerTags {
+
+						if tArg == tag.Name {
+							tagsToDelete = append(tagsToDelete, tag)
+							break
+						}
 					}
 				}
+			} else if fieldFl == "date" {
 
-				if ltFl != "" && fieldFl == "date" {
-					if lCutDate.Before(tag.Date) {
-						tagsToDelete = append(tagsToDelete, tag)
+				gDuration, err := parseDuration(gtFl)
+				if err != nil {
+					return fmt.Errorf("Cannot parse duration from 'gt': %s", err)
+				}
+				gCutDate := time.Now().Add(-gDuration)
+
+				lDuration, err := parseDuration(ltFl)
+				if err != nil {
+					return fmt.Errorf("Cannot parse duration from 'lt': %s", err)
+				}
+				lCutDate := time.Now().Add(-lDuration)
+
+				for _, tag := range dockerTags {
+
+					if gtFl != "" && fieldFl == "date" {
+						if gCutDate.After(tag.Date) {
+							tagsToDelete = append(tagsToDelete, tag)
+						}
+					}
+
+					if ltFl != "" && fieldFl == "date" {
+						if lCutDate.Before(tag.Date) {
+							tagsToDelete = append(tagsToDelete, tag)
+						}
 					}
 				}
+			} else {
+				log.Fatal("'field' is not valid.")
+				os.Exit(1)
 			}
 
 			if len(tagsToDelete) == 0 {

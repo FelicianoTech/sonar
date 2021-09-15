@@ -20,7 +20,7 @@ var (
 
 func init() {
 
-	tagsCmd.PersistentFlags().StringVar(&fieldFl, "field", "", "the field to filter what tags will be selected. Only 'date' is supported right now.")
+	tagsCmd.PersistentFlags().StringVar(&fieldFl, "field", "name", "the field to filter what tags will be selected.")
 	tagsCmd.PersistentFlags().StringVar(&gtFl, "gt", "", "filter tags 'greater than' this value - allowed values are based on the 'field' choosen. A relative time in seconds (s), minutes (m), hours (h), days (d), or weeks (w) is supported.")
 	tagsCmd.PersistentFlags().StringVar(&ltFl, "lt", "", "filter tags 'less than' this value - allowed values are based on the 'field' choosen. A relative time in seconds (s), minutes (m), hours (h), days (d), or weeks (w) is supported.")
 
