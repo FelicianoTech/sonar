@@ -36,22 +36,6 @@ workflows:
                 root: "."
                 paths:
                   - "dist"
-      - build-snap:
-          name: "Build Snap"
-          requires:
-            - gor/release
-          filters:
-            branches:
-              ignore: /^trunk$/
-      - build-snap:
-          name: "Build 'edge' Snap"
-          requires:
-            - gor/release
-          filters:
-            branches:
-              only: /^trunk$/
-          publish-edge: true
-          context: main
       - test-with-images:
           requires:
             - gor/release
@@ -90,18 +74,6 @@ workflows:
                 paths:
                   - "dist"
           context: main
-      - build-snap:
-          name: "Build 'stable' Snap"
-          requires:
-            - gor/release
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              # Simplified SemVer regex
-              only: /^v\d+\.\d+\.\d+$/
-          publish-stable: true
-          context: main
 
 jobs:
   test:
@@ -135,51 +107,6 @@ jobs:
           key: go-mod-v2-{{ checksum "go.sum" }}
           paths:
             - "/home/circleci/.cache/go-build"
-  build-snap:
-    parameters:
-      publish-edge:
-        type: boolean
-        default: false
-      publish-stable:
-        type: boolean
-        default: false
-    docker:
-      - image: cibuilds/snapcraft:core18
-    steps:
-      - checkout
-      - attach_workspace:
-          at: .
-      - run: sudo rm -r sonar
-      - run:
-          name: "Build Snaps for Each Architecture"
-          command: |
-            # Generate a version file that Snapcraft can use
-            dist/sonar_linux_amd64/sonar version --short > VERSION
-            snapcraft --target-arch=amd64 --destructive-mode
-            snapcraft --target-arch=armhf --destructive-mode
-            snapcraft --target-arch=arm64 --destructive-mode
-      - when:
-          condition: << parameters.publish-edge >>
-          steps:
-            - run:
-                name: "Publish to Snap Store in the Edge Channel"
-                command: |
-                  # Snapcraft Tokens are valid for 1 year. This one expires August 1st, 2021
-                  echo $SNAPCRAFT_LOGIN_FILE | base64 --decode --ignore-garbage | snapcraft login --with -
-                  snapcraft upload --release=edge *amd64.snap
-                  snapcraft upload --release=edge *arm64.snap
-                  snapcraft upload --release=edge *armhf.snap
-      - when:
-          condition: << parameters.publish-stable >>
-          steps:
-            - run:
-                name: "Publish to Snap Store in the Stable Channel"
-                command: |
-                  # Snapcraft Tokens are valid for 1 year. This one expires August 1st, 2021
-                  echo $SNAPCRAFT_LOGIN_FILE | base64 --decode --ignore-garbage | snapcraft login --with -
-                  snapcraft upload --release=stable *amd64.snap
-                  snapcraft upload --release=stable *arm64.snap
-                  snapcraft upload --release=stable *armhf.snap
   test-with-images:
     parameters:
       image:
