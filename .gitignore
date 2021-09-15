@@ -1,9 +1,3 @@
 # Binaries
 /sonar/sonar
 /dist/
-
-# Snapcraft
-*.snap
-/parts/
-/prime/
-/stage/
