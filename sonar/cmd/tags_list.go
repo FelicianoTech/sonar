@@ -2,14 +2,11 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/felicianotech/sonar/sonar/docker"
 
 	"github.com/spf13/cobra"
-
-	log "github.com/sirupsen/logrus"
 )
 
 var (
@@ -21,22 +18,23 @@ var (
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
-			if fieldFl != "date" && fieldFl != "" {
-				log.Fatal("if 'field' is set it must be 'date'.")
-				os.Exit(1)
-			}
+			var gCutDate time.Time
+			var lCutDate time.Time
 
-			gDuration, err := parseDuration(gtFl)
-			if err != nil {
-				return fmt.Errorf("Cannot parse duration from 'gt': %s", err)
-			}
-			gCutDate := time.Now().Add(-gDuration)
+			if fieldFl == "date" {
 
-			lDuration, err := parseDuration(ltFl)
-			if err != nil {
-				return fmt.Errorf("Cannot parse duration from 'lt': %s", err)
+				gDuration, err := parseDuration(gtFl)
+				if err != nil {
+					return fmt.Errorf("Cannot parse duration from 'gt': %s", err)
+				}
+				gCutDate = time.Now().Add(-gDuration)
+
+				lDuration, err := parseDuration(ltFl)
+				if err != nil {
+					return fmt.Errorf("Cannot parse duration from 'lt': %s", err)
+				}
+				lCutDate = time.Now().Add(-lDuration)
 			}
-			lCutDate := time.Now().Add(-lDuration)
 
 			dockerTags, err := docker.GetAllTags(args[0])
 			if err != nil {
@@ -46,7 +44,7 @@ var (
 
 			for _, tag := range dockerTags {
 
-				if fieldFl != "" {
+				if fieldFl == "date" {
 					if gtFl != "" && fieldFl == "date" {
 						if gCutDate.After(tag.Date) {
 							filteredTags = append(filteredTags, tag)
