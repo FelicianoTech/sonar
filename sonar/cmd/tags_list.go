@@ -14,7 +14,7 @@ var (
 
 	tagsListCmd = &cobra.Command{
 		Use:   "list <image-name>",
-		Short: "Displays tags for a given Docker image name",
+		Short: "Displays tags on Docker Hub for a given Docker image name",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
