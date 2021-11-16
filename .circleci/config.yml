@@ -46,7 +46,9 @@ workflows:
                 - linux-amd64
                 - linux-arm64
                 - macos
-                #- windows
+      - test-with-windows:
+          requires:
+            - gor/release
       - functional-tests:
           requires:
             - gor/release
@@ -119,9 +121,18 @@ jobs:
       - run: |
           if [ $OSD_FAMILY == "linux" ]; then
             ./dist/sonar_linux_$(dpkg --print-architecture)/sonar version
-          else
+          elif [ $OSD_FAMILY == "darwin" ]; then
             ./dist/sonar_darwin_amd64/sonar version
+          else
+            echo "Unsupported OS and/or architecture when testing the Sonar binary." && exit 1
           fi
+  test-with-windows:
+    executor: windows
+    steps:
+      - attach_workspace:
+          at: .
+      - run: |
+          ./dist/sonar_windows_amd64/sonar version
   functional-tests:
     executor: linux-amd64
     steps:
