@@ -23,17 +23,23 @@ var (
 
 			if fieldFl == "date" {
 
-				gDuration, err := parseDuration(gtFl)
-				if err != nil {
-					return fmt.Errorf("Cannot parse duration from 'gt': %s", err)
-				}
-				gCutDate = time.Now().Add(-gDuration)
+				if gtFl != "" {
 
-				lDuration, err := parseDuration(ltFl)
-				if err != nil {
-					return fmt.Errorf("Cannot parse duration from 'lt': %s", err)
+					gDuration, err := parseDuration(gtFl)
+					if err != nil {
+						return fmt.Errorf("Cannot parse duration from 'gt': %s", err)
+					}
+					gCutDate = time.Now().Add(-gDuration)
 				}
-				lCutDate = time.Now().Add(-lDuration)
+
+				if ltFl != "" {
+
+					lDuration, err := parseDuration(ltFl)
+					if err != nil {
+						return fmt.Errorf("Cannot parse duration from 'lt': %s", err)
+					}
+					lCutDate = time.Now().Add(-lDuration)
+				}
 			}
 
 			dockerTags, err := docker.GetAllTags(args[0])
