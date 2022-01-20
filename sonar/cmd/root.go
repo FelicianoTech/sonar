@@ -11,11 +11,19 @@ import (
 
 var cfgFile string
 var dockerPassword string
+var versionFl bool
 
 var rootCmd = &cobra.Command{
 	Use:   "sonar",
 	Short: "A Docker utility tool",
 	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		if versionFl {
+			versionCmd.Run(cmd, []string{"--short"})
+		} else {
+			cmd.Help()
+		}
+	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -32,6 +40,7 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.config/sonar.yml)")
 	rootCmd.PersistentFlags().StringVar(&dockerPassword, "password", "", "Docker password")
+	rootCmd.Flags().BoolVar(&versionFl, "version", false, "runs version --short")
 	viper.BindPFlag("pass", rootCmd.PersistentFlags().Lookup("password"))
 }
 
