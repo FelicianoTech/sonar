@@ -1,8 +1,11 @@
 package metafile
 
 import (
-	"net/url"
+	"log"
+	"strings"
 	"time"
+
+	"github.com/go-git/go-git/v5"
 )
 
 type DockerInfo struct {
@@ -12,7 +15,7 @@ type DockerInfo struct {
 }
 
 type GitInfo struct {
-	Remote   url.URL
+	Remote   string
 	Hash     string
 	Filepath string
 }
@@ -29,9 +32,50 @@ type Metafile struct {
 	Generator   string
 	Date        time.Time
 	Description string
-	Home        url.URL
-	Docs        url.URL
-	Docker      DockerInfo
-	Git         GitInfo
+	Home        string
+	Docs        string
+	Docker      *DockerInfo
+	Git         *GitInfo
 	Packages    []PackageInfo
+}
+
+func Generate() Metafile {
+
+	mf := Metafile{
+		Version:   "0.1.0",
+		Generator: "sonar",
+		Date:      time.Now(),
+	}
+
+	// missing
+	// description
+	// home
+	// docs
+	// package
+
+	repository, err := git.PlainOpenWithOptions(".", &git.PlainOpenOptions{
+		DetectDotGit: true,
+	})
+	if err != nil {
+		log.Print("Couldn't open repo")
+	}
+
+	remote, err := repository.Remote("origin")
+
+	remoteURL := strings.Split(strings.Split(remote.String(), "\n")[0], "\t")[1]
+	remoteURL = strings.Split(remoteURL, ":")[1]
+	org := strings.Split(remoteURL, "/")[0]
+	repo := strings.Split(remoteURL, "/")[1]
+	repo = repo[0 : len(repo)-12]
+	ref, err := repository.Head()
+
+	mf.Git = &GitInfo{
+		Remote: "https://github.com/" + org + "/" + repo,
+		Hash:   ref.Hash().String(),
+	}
+
+	log.Print("org: " + org)
+	log.Print("repo: " + repo)
+
+	return mf
 }

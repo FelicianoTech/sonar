@@ -1,0 +1,37 @@
+{
+"Version": "0.1.0",
+"Generator": "sonar",
+"Date": "2021-08-08T23:54:12.185229249-04:00",
+"Description": "",
+"Home": {
+"Scheme": "",
+"Opaque": "",
+"User": null,
+"Host": "",
+"Path": "",
+"RawPath": "",
+"ForceQuery": false,
+"RawQuery": "",
+"Fragment": "",
+"RawFragment": ""
+},
+"Docs": {
+"Scheme": "",
+"Opaque": "",
+"User": null,
+"Host": "",
+"Path": "",
+"RawPath": "",
+"ForceQuery": false,
+"RawQuery": "",
+"Fragment": "",
+"RawFragment": ""
+},
+"Docker": null,
+"Git": {
+"Remote": "https://github.com/felicianotech/sonar",
+"Hash": "7352d6f3fff82ecaaa0882b7f3992004a57739ed",
+"Filepath": ""
+},
+"Packages": null
+}

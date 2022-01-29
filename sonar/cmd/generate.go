@@ -12,13 +12,13 @@ import (
 
 var generateCmd = &cobra.Command{
 	Use:   "generate",
-	Short: "Generate meta.json file",
+	Short: "Generate metafile.json file",
+	Long: `Generate a metafile.json file optionally using a seed.yml file.
+`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("generate called")
 
-		mf := metafile.Metafile{
-			Version: "0.1.0",
-		}
+		mf := metafile.Generate()
 
 		file, _ := json.MarshalIndent(mf, "", "")
 		_ = ioutil.WriteFile("test.json", file, 0644)

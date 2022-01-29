@@ -3,8 +3,8 @@ module github.com/felicianotech/sonar
 go 1.15
 
 require (
-	github.com/Microsoft/go-winio v0.4.15 // indirect
 	github.com/fsouza/go-dockerclient v1.6.6
+	github.com/go-git/go-git/v5 v5.4.2
 	github.com/gopherlibs/pmm v0.1.1
 	github.com/magefile/mage v1.10.0
 	github.com/opencontainers/go-digest v1.0.0 // indirect
