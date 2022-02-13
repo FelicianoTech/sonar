@@ -36,6 +36,8 @@ nfpms:
     formats:
       - deb
     bindir: /usr/bin
+    recommends:
+      - docker-ce
 
 brews:
   - tap:
