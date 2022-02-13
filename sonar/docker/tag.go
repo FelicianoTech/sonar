@@ -37,6 +37,11 @@ func GetAllTags(image string) ([]Tag, error) {
 
 		for _, v := range respPage["results"].([]interface{}) {
 
+			// if a tag is inactive, skip
+			if v.(map[string]interface{})["tag_status"].(string) == "inactive" {
+				continue
+			}
+
 			var aTag Tag
 
 			aTag.Name = v.(map[string]interface{})["name"].(string)
