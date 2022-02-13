@@ -213,4 +213,9 @@ jobs:
           ssh pkg@pkg.atl.revidian.net "aptly snapshot create ftech-ubuntu-impish--sonar-${CIRCLE_TAG} from repo ftech-ubuntu-impish"
           ssh pkg@pkg.atl.revidian.net "aptly publish switch impish filesystem:ftech:/ubuntu ftech-ubuntu-impish--sonar-${CIRCLE_TAG}"
 
+          # Ubuntu 22.04 Jammy
+          ssh pkg@pkg.atl.revidian.net "aptly repo add ftech-ubuntu-jammy ~/incoming/sonar-${CIRCLE_TAG}/"
+          ssh pkg@pkg.atl.revidian.net "aptly snapshot create ftech-ubuntu-jammy--sonar-${CIRCLE_TAG} from repo ftech-ubuntu-jammy"
+          ssh pkg@pkg.atl.revidian.net "aptly publish switch jammy filesystem:ftech:/ubuntu ftech-ubuntu-jammy--sonar-${CIRCLE_TAG}"
+
           ssh pkg@pkg.atl.revidian.net "rm -r ~/incoming/sonar-${CIRCLE_TAG}"
