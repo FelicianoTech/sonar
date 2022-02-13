@@ -2,6 +2,7 @@ package docker
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"time"
 )
@@ -13,11 +14,18 @@ type Tag struct {
 	Digest string
 }
 
-func GetAllTags(image string) ([]Tag, error) {
+func GetAllTags(imageStr string) ([]Tag, error) {
 
 	var results []Tag
+	var image *ImageRef
 
-	reqURL := "https://hub.docker.com/v2/repositories/" + image + "/tags/?page_size=100"
+	image, err := ParseImageRef(imageStr)
+	if err != nil {
+		return nil, errors.New("Image name not parsable.")
+	}
+	image.ShowTag = false
+
+	reqURL := "https://hub.docker.com/v2/repositories/" + image.String() + "/tags/?page_size=100"
 
 	for {
 
