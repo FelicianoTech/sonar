@@ -76,6 +76,15 @@ workflows:
                 paths:
                   - "dist"
           context: main
+      - deb-publish:
+          requires:
+            - gor/release
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              # Simplified SemVer regex
+              only: /^v\d+\.\d+\.\d+$/
 
 jobs:
   test:
@@ -180,3 +189,28 @@ jobs:
             echo ""
             exit 1
           fi
+  deb-publish:
+    docker:
+      - image: cimg/base:current
+    steps:
+      - attach_workspace:
+          at: .
+      - add_ssh_keys
+      - run: |
+          echo 'pkg.atl.revidian.net ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBE16slz1okRPeUhxIpzBCn9rHqjk51ylxEYlYXvblswcxOQ0rPyAX6N8Bd2pnsh99xce/jaX2KJHPLPCc+zAXTg= root@li361-16' >> ~/.ssh/known_hosts
+      - run: |
+          ssh pkg@pkg.atl.revidian.net "mkdir ~/incoming/sonar-${CIRCLE_TAG}"
+          scp ./dist/*.deb pkg@pkg.atl.revidian.net:incoming/sonar-${CIRCLE_TAG}/
+
+          # Ubuntu 20.04 Focal
+          ssh pkg@pkg.atl.revidian.net "aptly repo add ftech-ubuntu-focal ~/incoming/sonar-${CIRCLE_TAG}/"
+          ssh pkg@pkg.atl.revidian.net "aptly snapshot create ftech-ubuntu-focal--sonar-${CIRCLE_TAG} from repo ftech-ubuntu-focal"
+          ssh pkg@pkg.atl.revidian.net "aptly publish switch focal filesystem:ftech:/ubuntu ftech-ubuntu-focal--sonar-${CIRCLE_TAG}"
+
+
+          # Ubuntu 21.10 Impish
+          ssh pkg@pkg.atl.revidian.net "aptly repo add ftech-ubuntu-impish ~/incoming/sonar-${CIRCLE_TAG}/"
+          ssh pkg@pkg.atl.revidian.net "aptly snapshot create ftech-ubuntu-impish--sonar-${CIRCLE_TAG} from repo ftech-ubuntu-impish"
+          ssh pkg@pkg.atl.revidian.net "aptly publish switch impish filesystem:ftech:/ubuntu ftech-ubuntu-impish--sonar-${CIRCLE_TAG}"
+
+          ssh pkg@pkg.atl.revidian.net "rm -r ~/incoming/sonar-${CIRCLE_TAG}"
