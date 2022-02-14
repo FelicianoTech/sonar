@@ -10,7 +10,7 @@ executors:
       - image: cimg/base:2022.01
   linux-amd64:
     machine:
-      image: ubuntu-2004:202201-01
+      image: ubuntu-2004:202201-02
   linux-arm64:
     machine:
       image: ubuntu-2004:202201-02
