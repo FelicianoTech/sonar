@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"regexp"
 	"time"
 )
 
@@ -79,4 +80,34 @@ func GetAllTags(imageStr string) ([]Tag, error) {
 	}
 
 	return results, nil
+}
+
+func GetFilteredTags(imageStr string, nameRegex string) ([]Tag, error) {
+
+	allTags, err := GetAllTags(imageStr)
+	if err != nil {
+		return nil, err
+	}
+
+	var filteredTags []Tag
+	var invert bool
+
+	if nameRegex[0] == '!' {
+		invert = true
+		nameRegex = nameRegex[1:]
+	}
+
+	for _, tag := range allTags {
+
+		matched, err := regexp.MatchString(nameRegex, tag.Name)
+		if err != nil {
+			return nil, err
+		}
+
+		if matched != invert {
+			filteredTags = append(filteredTags, tag)
+		}
+	}
+
+	return filteredTags, nil
 }
