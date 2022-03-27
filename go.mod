@@ -14,7 +14,10 @@ require (
 	github.com/spf13/viper v1.10.1
 )
 
-require github.com/docker/docker v20.10.12+incompatible
+require (
+	github.com/docker/docker v20.10.12+incompatible
+	github.com/hashicorp/go-version v1.4.0
+)
 
 require (
 	github.com/Azure/go-ansiterm v0.0.0-20210617225240-d185dfc1b5a1 // indirect
