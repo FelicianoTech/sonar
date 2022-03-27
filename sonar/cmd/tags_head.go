@@ -10,7 +10,8 @@ import (
 )
 
 var (
-	method string
+	filterNameFl string
+	method       string
 
 	headCmd = &cobra.Command{
 		Use:   "head <image-name>",
@@ -21,7 +22,7 @@ but SemVer is also supported.`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
-			dockerTags, err := docker.GetAllTags(args[0])
+			dockerTags, err := docker.GetFilteredTags(args[0], filterNameFl)
 			if err != nil {
 				return fmt.Errorf("Failed retrieving Docker tags: %s", err)
 			} else if len(dockerTags) == 0 {
@@ -79,5 +80,6 @@ but SemVer is also supported.`,
 func init() {
 
 	headCmd.PersistentFlags().StringP("method", "m", "date", "Criteria to calculate the head tag. Supported values are 'date' (default) or 'semver'.")
+	headCmd.PersistentFlags().StringVar(&filterNameFl, "filter-name", ".*", "a regex of which tag names to include")
 	tagsCmd.AddCommand(headCmd)
 }
