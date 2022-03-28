@@ -11,7 +11,7 @@ import (
 
 var (
 	filterNameFl string
-	method       string
+	methodFl     string
 
 	headCmd = &cobra.Command{
 		Use:   "head <image-name>",
@@ -35,12 +35,12 @@ but SemVer is also supported.`,
 
 			for _, tag := range dockerTags {
 
-				if method == "date" {
+				if methodFl == "date" {
 
 					if tag.Date.After(headTag.Date) {
 						headTag = tag
 					}
-				} else if method == "semver" {
+				} else if methodFl == "semver" {
 
 					headTagV, err := semver.NewSemver(headTag.Name)
 					if err != nil {
@@ -62,7 +62,7 @@ but SemVer is also supported.`,
 				}
 			}
 
-			if method == "semver" {
+			if methodFl == "semver" {
 
 				_, err := semver.NewSemver(headTag.Name)
 				if err != nil {
@@ -79,7 +79,7 @@ but SemVer is also supported.`,
 
 func init() {
 
-	headCmd.PersistentFlags().StringP("method", "m", "date", "Criteria to calculate the head tag. Supported values are 'date' (default) or 'semver'.")
+	headCmd.PersistentFlags().StringVarP(&methodFl, "method", "m", "date", "Criteria to calculate the head tag. Supported values are 'date' (default) or 'semver'.")
 	headCmd.PersistentFlags().StringVar(&filterNameFl, "filter-name", ".*", "a regex of which tag names to include")
 	tagsCmd.AddCommand(headCmd)
 }
