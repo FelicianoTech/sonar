@@ -20,6 +20,11 @@ var layersListCmd = &cobra.Command{
 			return fmt.Errorf("%s", err)
 		}
 
+		if validity, err := image.Valid(); validity != true {
+
+			return err
+		}
+
 		image.ShowTag = false
 
 		dockerLayers, err := docker.GetAllLayers(image.String(), image.Tag)
