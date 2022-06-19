@@ -8,7 +8,10 @@ import (
 	"strings"
 )
 
-var ErrImageName = errors.New("Error: Invalid image name.")
+var (
+	ErrImageName = errors.New("Error: Invalid image name.")
+	ErrImageTag  = errors.New("Error: Image tag doesn't exist.")
+)
 
 type ImageRef struct {
 	Namespace string `json:"namesapce"`
@@ -24,6 +27,29 @@ func (this *ImageRef) String() string {
 	}
 
 	return fmt.Sprintf("%s/%s", this.Namespace, this.Name)
+}
+
+/* Returns true if the image tag exists for an image. */
+func (this *ImageRef) Valid() (bool, error) {
+
+	reqURL := "https://hub.docker.com/v2/repositories/" + this.Namespace + "/" + this.Name + "/tags/" + this.Tag
+
+	req, err := http.NewRequest("GET", reqURL, nil)
+	if err != nil {
+		return false, err
+	}
+
+	resp, err := SendRequest(req, "", "")
+	if err != nil {
+		return false, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusOK {
+		return true, nil
+	} else {
+		return false, ErrImageTag
+	}
 }
 
 // NewImageRef creates a new reference to a Docker image.
