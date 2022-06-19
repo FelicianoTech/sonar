@@ -28,7 +28,7 @@ workflows:
     jobs:
       - test
       - gor/release:
-          version: "1.7.0"
+          version: "1.9.2"
           go-version: "1.18.3"
           dry-run: true
           post-steps:
@@ -62,7 +62,7 @@ workflows:
               # Simplified SemVer regex
               only: /^v\d+\.\d+\.\d+$/
       - gor/release:
-          version: "1.7.0"
+          version: "1.9.2"
           go-version: "1.18.3"
           filters:
             branches:
@@ -128,10 +128,16 @@ jobs:
       - attach_workspace:
           at: .
       - run: |
+          V1=""
+
+          if uname -m | grep "x86_64"; then
+            V1="_v1"
+          fi
+
           if [ $OSD_FAMILY == "linux" ]; then
-            ./dist/sonar_linux_$(dpkg --print-architecture)/sonar version
+            ./dist/sonar_linux_$(dpkg --print-architecture)${V1}/sonar version
           elif [ $OSD_FAMILY == "darwin" ]; then
-            ./dist/sonar_darwin_amd64/sonar version
+            ./dist/sonar_darwin_amd64${V1}/sonar version
           else
             echo "Unsupported OS and/or architecture when testing the Sonar binary." && exit 1
           fi
@@ -141,14 +147,14 @@ jobs:
       - attach_workspace:
           at: .
       - run: |
-          ./dist/sonar_windows_amd64/sonar version
+          ./dist/sonar_windows_amd64_v1/sonar version
   functional-tests:
     executor: linux-amd64
     steps:
       - attach_workspace:
           at: .
       - run: |
-          mv ./dist/sonar_linux_amd64/sonar ~/bin/
+          mv ./dist/sonar_linux_amd64_v1/sonar ~/bin/
 
           output=$(sonar images list ftechtest)
 
