@@ -79,6 +79,8 @@ func GetAllTags(imageStr string) ([]Tag, error) {
 				//	return nil, err
 				//}
 
+				anImage.Arch = i.(map[string]interface{})["architecture"].(string)
+
 				if i.(map[string]interface{})["digest"] != nil {
 					anImage.Digest = i.(map[string]interface{})["digest"].(string)
 				}
