@@ -62,9 +62,13 @@ func GetAllTags(imageStr string) ([]Tag, error) {
 
 			var aTag Tag
 
+			// only parse time when present
+			if v.(map[string]interface{})["tag_last_pushed"] != nil {
+				aTag.LastPushed, _ = time.Parse(time.RFC3339, v.(map[string]interface{})["tag_last_pushed"].(string))
+			}
+
 			aTag.Name = v.(map[string]interface{})["name"].(string)
 			aTag.Size = int64(v.(map[string]interface{})["full_size"].(float64))
-			aTag.LastPushed, err = time.Parse(time.RFC3339, v.(map[string]interface{})["tag_last_pushed"].(string))
 			aTag.Date = aTag.LastPushed
 			if err != nil {
 				return nil, err
