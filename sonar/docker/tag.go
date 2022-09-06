@@ -8,11 +8,20 @@ import (
 	"time"
 )
 
+/*
+ * A Tag is a group of one or more Images (multiple archs) in an ImageFamily.
+ * Typically they are published around the same time with the CPU architecture
+ * being the main difference between the Images.
+ */
 type Tag struct {
-	Name   string
-	Size   int64
-	Date   time.Time
-	Digest string
+	Date       time.Time
+	Digest     string    `json:"digest"`
+	Images     []Image   `json:"images"`
+	LastPulled time.Time `json:"tag_last_pulled"`
+	LastPushed time.Time `json:"tag_last_pushed"`
+	Name       string    `json:"name"`
+	Size       int64     `json:"full_size"`
+	Status     string    `json:"tag_status"`
 }
 
 func GetAllTags(imageStr string) ([]Tag, error) {
@@ -55,18 +64,26 @@ func GetAllTags(imageStr string) ([]Tag, error) {
 
 			aTag.Name = v.(map[string]interface{})["name"].(string)
 			aTag.Size = int64(v.(map[string]interface{})["full_size"].(float64))
-			aTag.Date, err = time.Parse(time.RFC3339, v.(map[string]interface{})["last_updated"].(string))
-			anImage := v.(map[string]interface{})["images"].([]interface{})[0]
-
-			// There are cases where the digest for a tag can be missing. Not
-			// sure why. Until then, check for this edge case and set to an
-			// empty string (don't set) when digest isn't available.
-			if anImage.(map[string]interface{})["digest"] != nil {
-				aTag.Digest = anImage.(map[string]interface{})["digest"].(string)
-			}
-
+			aTag.LastPushed, err = time.Parse(time.RFC3339, v.(map[string]interface{})["tag_last_pushed"].(string))
+			aTag.Date = aTag.LastPushed
 			if err != nil {
 				return nil, err
+			}
+
+			for _, i := range v.(map[string]interface{})["images"].([]interface{}) {
+
+				var anImage Image
+
+				//anImage.LastPushed, err = time.Parse(time.RFC3339, i.(map[string]interface{})["last_pushed"].(string))
+				//if err != nil {
+				//	return nil, err
+				//}
+
+				if i.(map[string]interface{})["digest"] != nil {
+					anImage.Digest = i.(map[string]interface{})["digest"].(string)
+				}
+
+				aTag.Images = append(aTag.Images, anImage)
 			}
 
 			results = append(results, aTag)
