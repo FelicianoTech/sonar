@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/felicianotech/sonar/sonar/docker"
@@ -11,6 +12,7 @@ import (
 
 var (
 	sumSizeFl bool
+	archFl    bool
 
 	tagsListCmd = &cobra.Command{
 		Use:   "list <image-name>",
@@ -75,11 +77,27 @@ var (
 
 			var totalSize uint64
 
+			// This is where we actually output tags to display
 			for _, tag := range filteredTags {
-				fmt.Println(tag.Name)
+
+				fmt.Printf("%s", tag.Name)
+
 				if sumSizeFl {
 					totalSize += uint64(tag.Size)
 				}
+
+				if archFl {
+
+					var arches []string
+
+					for _, img := range tag.Images {
+						arches = append(arches, img.Arch)
+					}
+
+					fmt.Printf(" (%s)", strings.Join(arches, ","))
+				}
+
+				fmt.Printf("\n")
 			}
 
 			fmt.Println("====================")
@@ -95,6 +113,7 @@ var (
 
 func init() {
 	tagsListCmd.Flags().BoolVar(&sumSizeFl, "sum-size", false, "output the storage size of tags")
+	tagsCmd.PersistentFlags().BoolVar(&archFl, "arch", false, "show CPU architectures available per tag. Defaults to false.")
 
 	tagsCmd.AddCommand(tagsListCmd)
 }
