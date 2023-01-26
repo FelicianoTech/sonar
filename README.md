@@ -53,11 +53,11 @@ Many distros allow you to double-click the file to install.
 Via terminal, you can do the following:
 
 ```bash
-wget https://github.com/felicianotech/sonar/releases/download/v0.12.0/sonar_0.12.0_amd64.deb
-sudo dpkg -i sonar_0.12.0_amd64.deb
+wget https://github.com/felicianotech/sonar/releases/download/v0.19.0/sonar_0.19.0_amd64.deb
+sudo dpkg -i sonar_0.19.0_amd64.deb
 ```
 
-`0.12.0` and `amd64` may need to be replaced with your desired version and CPU architecture respectively.
+`0.19.0` and `amd64` may need to be replaced with your desired version and CPU architecture respectively.
 
 #### Binary Install
 You can download and run the raw Sonar binary from the [GitHub Releases page][gh-releases] if you don't want to use any package manager.
@@ -65,23 +65,22 @@ Simply download the tarball for your OS and architecture and extract the binary 
 Here's one way to do this with `curl` and `tar`:
 
 ```bash
-dlURL="https://github.com/felicianotech/sonar/releases/download/v0.12.0/sonar-v0.12.0-linux-amd64.tar.gz"
+dlURL="https://github.com/felicianotech/sonar/releases/download/v0.19.0/sonar-v0.19.0-linux-amd64.tar.gz"
 curl -sSL $dlURL | sudo tar -xz -C /usr/local/bin sonar
 ```
 
-`0.12.0` and `amd64` may need to be replaced with your desired version and CPU architecture respectively.
+`0.19.0` and `amd64` may need to be replaced with your desired version and CPU architecture respectively.
 
 ### macOS
 
-There are two ways you can install Sonar on a macOS (amd64) system.
-Support for M1 macs (the arm64 chip) is coming in early 20201.
+There are two ways you can install Sonar on macOS. Both x86 Macs and Apple Silicon (arm64-based chips, including M1 and M2) are supported.
 
 #### Brew (recommended)
 
-Installing Sonar via brew is a simple one-liner:
+Installing Sonar via Homebrew is a simple one-liner:
 
 ```bash
-brew install sonar
+brew install felicianotech/tap/sonar
 ```
 
 #### Binary Install
@@ -90,11 +89,11 @@ Simply download the tarball for your OS and architecture and extract the binary 
 Here's one way to do this with `curl` and `tar`:
 
 ```bash
-dlURL="https://github.com/felicianotech/sonar/releases/download/v0.12.0/sonar-v0.12.0-macos-amd64.tar.gz"
+dlURL="https://github.com/felicianotech/sonar/releases/download/v0.19.0/sonar-v0.19.0-macos-amd64.tar.gz"
 curl -sSL $dlURL | sudo tar -xz -C /usr/local/bin sonar
 ```
 
-`0.12.0` may need to be replaced with your desired version.
+`0.19.0` may need to be replaced with your desired version.
 
 ### Windows
 
