@@ -25,25 +25,27 @@ Docker Hub metrics such as stars and pulls can be read while tasks such as updat
 
 There are a few ways you can install Sonar on a Linux amd64 or arm64 system.
 
-#### Linux Snap (recommended)
-Sonar can be installed via snap for users of Ubuntu (and Ubuntu flavors), `Pop!_OS`, Debian, Fedora, and more.
-It's an easy installation that auto updates, allows to you install multiple versions of Sonar, or even follow the development track.
-You can install Sonar via snap by running in a terminal:
+#### Ubuntu Apt Repository (recommended)
+I (Ricardo N Feliciano) run an Apt/Debian repository for a lot of my software, which includes Sonar.
+The benefit of the Apt repository is that updates are handled by Ubuntu's built-in package manager.
+
+For security reasons, first we install the GPG key for the repository:
 
 ```bash
-sudo snap install sonar
-sudo snap connect sonar:docker docker
+sudo wget "http://pkg.feliciano.tech/ftech-archive-keyring.gpg" -P /usr/share/keyrings/
 ```
 
-The latter command is needed if you use commands such as `sonar packages list`.
-This is only available in Sonar edge right now.
-It'll be available in the v0.14 release.
+Now we add the repository to the system:
 
-If you don't have the `snap` command available, you might be able to find instructions for your distro [here](https://docs.snapcraft.io/core/install).
+```bash
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ftech-archive-keyring.gpg] http://pkg.feliciano.tech/ubuntu $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/felicianotech.list
+```
 
-You can also install via the Snap Store by clicking the following button:
+Finally, we can install Sonar:
 
-[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/sonar)
+```bash
+sudo apt update && sudo apt install sonar
+```
 
 #### Debian Package (.deb)
 You can install Sonar into an Apt based computer by download the `.deb` file to the desired system.
