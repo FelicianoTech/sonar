@@ -75,7 +75,7 @@ workflows:
                 root: "."
                 paths:
                   - "dist"
-          context: main
+          context: goreleaser-ctx
       - deb-publish:
           requires:
             - gor/release
