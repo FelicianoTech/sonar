@@ -10,17 +10,17 @@ executors:
       - image: cimg/base:2023.01
   linux-amd64:
     machine:
-      image: ubuntu-2204:2022.10.2
+      image: ubuntu-2204:2023.02.1
   linux-arm64:
     machine:
-      image: ubuntu-2004:2022.10.1
+      image: ubuntu-2004:2023.02.1
     resource_class: arm.medium
   macos:
     macos:
-      xcode: 13.0.0
+      xcode: 14.0.0
   windows:
     machine:
-      image: windows-server-2022-gui:2022.10.1
+      image: windows-server-2022-gui:2023.03.1
       resource_class: windows.medium
 
 workflows:
