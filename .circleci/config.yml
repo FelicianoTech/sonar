@@ -29,7 +29,7 @@ workflows:
       - test
       - gor/release:
           version: "1.16.0"
-          go-version: "1.19.5"
+          go-version: "1.20.2"
           dry-run: true
           post-steps:
             - persist_to_workspace:
@@ -63,7 +63,7 @@ workflows:
               only: /^v\d+\.\d+\.\d+$/
       - gor/release:
           version: "1.16.0"
-          go-version: "1.19.5"
+          go-version: "1.20.2"
           filters:
             branches:
               ignore: /.*/
@@ -89,7 +89,7 @@ workflows:
 jobs:
   test:
     docker:
-      - image: cimg/go:1.19.5
+      - image: cimg/go:1.20.2
     environment:
       GOTESTSUM_JUNITFILE: "junit/unit-tests.xml"
     steps:
