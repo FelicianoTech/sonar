@@ -15,7 +15,7 @@ require (
 )
 
 require (
-	github.com/docker/docker v20.10.23+incompatible
+	github.com/docker/docker v20.10.24+incompatible
 	github.com/hashicorp/go-version v1.5.0
 )
 
